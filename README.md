@@ -12,6 +12,14 @@ encrypted end to end.
 It's a single self-contained app: a Python/FastAPI backend serving a React control
 panel, packaged into one binary with no runtime dependencies for end users.
 
+## Download
+
+[![Download NexusGrid for Windows](https://img.shields.io/badge/Download-NexusGrid%20for%20Windows-2ea44f?style=for-the-badge&logo=windows)](https://github.com/Tharunvipperla/NexusGrid-releases/releases/latest)
+
+Direct link: **[NexusGrid-Setup-1.0.0.exe](https://github.com/Tharunvipperla/NexusGrid-releases/releases/download/v1.0.0/NexusGrid-Setup-1.0.0.exe)** — a wizard install with a Start-Menu entry and an uninstaller. Once installed, the app keeps itself current through cryptographically signed auto-updates.
+
+> Not yet code-signed, so Windows SmartScreen may warn "unknown publisher" — choose **More info → Run anyway**. You can verify your download against the `sha256` in the release's `manifest.json`.
+
 ## What you can do
 - **Run tasks & workflows** — dispatch jobs (incl. multi-step DAGs) to worker nodes, with sandboxing, leases, retries, and per-step worker targeting.
 - **Host services & databases** — expose long-running services, and provision databases on demand (DBaaS).
