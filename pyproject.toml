@@ -1,13 +1,20 @@
 [build-system]
-requires = ["setuptools>=68"]
+requires = ["setuptools>=77"]
 build-backend = "setuptools.build_meta"
 
 [project]
 name = "nexus"
-version = "0.2.0"
+version = "1.1.0"
 description = "NexusGrid — modular peer-to-peer distributed compute grid"
+readme = "README.md"
 requires-python = ">=3.10"
+license = "MIT"
+license-files = ["LICENSE"]
 dynamic = ["dependencies"]
+
+[project.urls]
+Source = "https://github.com/Tharunvipperla/NexusGrid-grid"
+Releases = "https://github.com/Tharunvipperla/NexusGrid-releases/releases"
 
 [tool.setuptools.dynamic]
 dependencies = { file = ["requirements.txt"] }

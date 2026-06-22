@@ -1,5 +1,9 @@
 # NexusGrid
 
+[![CI](https://github.com/Tharunvipperla/NexusGrid-grid/actions/workflows/ci.yml/badge.svg)](https://github.com/Tharunvipperla/NexusGrid-grid/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+[![Latest release](https://img.shields.io/github/v/release/Tharunvipperla/NexusGrid-releases?label=download)](https://github.com/Tharunvipperla/NexusGrid-releases/releases/latest)
+
 **A peer-to-peer compute and storage grid for you and the people you trust.**
 
 NexusGrid pools the compute and storage of machines *you* and people you trust own
