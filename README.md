@@ -141,6 +141,12 @@ Start at **[`docs/`](docs/README.md)**:
 - **Developers** → [developer guide](docs/dev/README.md), [architecture](docs/dev/), [security model](docs/dev/security-model.md), [build & test](docs/dev/build-test.md).
 - **Feature deep-dives** → [`docs/guides/`](docs/guides/README.md).
 
+## Roadmap
+
+Where the project is headed — horizons, priorities, and the things we've
+consciously deferred — lives in [`ROADMAP.md`](ROADMAP.md). It's a living
+document; issues and discussions shape it.
+
 ## Contributing
 
 1. Fork and branch off `main`.
