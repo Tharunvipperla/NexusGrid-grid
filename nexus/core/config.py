@@ -378,6 +378,10 @@ def _safe_build_path(rel: str) -> str:
     # dir on Windows. Security F-009.
     if ":" in rel:
         return ""
+    # Reject control characters (NUL etc.) — they can't be valid path
+    # components and a NUL would raise mid-build when the file is written.
+    if any(ord(c) < 32 for c in rel):
+        return ""
     parts = [p for p in rel.split("/") if p not in ("", ".")]
     if any(p == ".." for p in parts):
         return ""
