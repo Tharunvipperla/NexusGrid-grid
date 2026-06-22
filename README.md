@@ -14,11 +14,27 @@ panel, packaged into one binary with no runtime dependencies for end users.
 
 ## Download
 
-[![Download NexusGrid for Windows](https://img.shields.io/badge/Download-NexusGrid%20for%20Windows-2ea44f?style=for-the-badge&logo=windows)](https://github.com/Tharunvipperla/NexusGrid-releases/releases/latest)
+[![Get the latest release](https://img.shields.io/badge/Download-latest%20release-2ea44f?style=for-the-badge)](https://github.com/Tharunvipperla/NexusGrid-releases/releases/latest)
 
-Direct link: **[NexusGrid-Setup-1.0.0.exe](https://github.com/Tharunvipperla/NexusGrid-releases/releases/download/v1.0.0/NexusGrid-Setup-1.0.0.exe)** — a wizard install with a Start-Menu entry and an uninstaller. Once installed, the app keeps itself current through cryptographically signed auto-updates.
+Grab the build for your OS from the **[latest release](https://github.com/Tharunvipperla/NexusGrid-releases/releases/latest)**. Once installed, every node keeps itself current through cryptographically signed auto-updates.
 
-> Not yet code-signed, so Windows SmartScreen may warn "unknown publisher" — choose **More info → Run anyway**. You can verify your download against the `sha256` in the release's `manifest.json`.
+| OS | Download | How to run |
+|---|---|---|
+| **Windows** | `NexusGrid-Setup-<ver>.exe` | Run the installer (wizard + Start-Menu entry + uninstaller). |
+| **macOS** | `NexusGrid-macos` | A bare binary, no installer. See the note below. |
+| **Linux** | `NexusGrid-linux` | A bare binary, no installer. See the note below. |
+
+> **Windows:** not yet code-signed, so SmartScreen may warn "unknown publisher" — choose **More info → Run anyway**.
+>
+> **macOS / Linux** have **no installer** — just a single binary. Put it in its **own folder** (it creates helper files next to itself when run) and launch it from there:
+> ```bash
+> mkdir nexusgrid && mv NexusGrid-macos nexusgrid/NexusGrid && cd nexusgrid
+> chmod +x NexusGrid          # make it executable
+> ./NexusGrid --port 8000
+> ```
+> If macOS Gatekeeper blocks it ("unidentified developer"), right-click → **Open** once, or run `xattr -d com.apple.quarantine ./NexusGrid`. The binaries aren't notarized/code-signed yet, so this first-run friction is expected — running it from its own folder is the reliable path.
+
+Verify any download against the `sha256` recorded in the release's `manifest.json`.
 
 ## What you can do
 - **Run tasks & workflows** — dispatch jobs (incl. multi-step DAGs) to worker nodes, with sandboxing, leases, retries, and per-step worker targeting.

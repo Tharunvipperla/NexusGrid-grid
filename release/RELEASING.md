@@ -90,38 +90,50 @@ You only redo this if you deliberately rotate the root (rare — §9.6).
 1. **Bump the version** in `nexus/__init__.py` (e.g. `0.2.0` → `0.3.0`) and
    commit.
 
-2. **Build** the binary **and** the installer (run from the repo root):
-   ```
-   build\build_installer.bat
-   ```
-   This produces **two** things in `dist\`:
-   - `NexusGrid.exe` — the bare binary. **This is the auto-update target.**
-   - `NexusGrid-Setup-<ver>.exe` — the Inno Setup installer (wizard + Start-Menu
-     entry + uninstaller). **This is what humans download for a first install.**
-   (`build\build.bat` alone makes just the bare exe; the installer step needs
-   [Inno Setup](https://jrsoftware.org/isdl.php).)
+2. **Build the binaries for every OS.** PyInstaller only builds for the host OS,
+   so cross-building isn't possible — use the CI matrix:
+   - **Push the tag** (`git tag v1.0.1 && git push origin v1.0.1`). The
+     `release.yml` workflow builds on `windows-latest`, `macos-latest` and
+     `ubuntu-latest` and uploads three artifacts: `NexusGrid-windows`
+     (`NexusGrid.exe` + `NexusGrid-Setup-<ver>.exe`), `NexusGrid-macos`
+     (`NexusGrid-macos`), and `NexusGrid-linux` (`NexusGrid-linux`).
+   - **Download** all three artifacts from the run into `dist\`.
 
-3. **Sign the manifest** over the **bare exe** (this also mints the fresh release
-   key, gets it certified by the root, and computes the sha256). Provide the
-   offline **root** key first:
+   To build a single OS locally instead: `build\build_installer.bat` (Windows,
+   needs [Inno Setup](https://jrsoftware.org/isdl.php) for the installer) or
+   `bash build/build.sh` (macOS/Linux, produces the bare `dist/NexusGrid`).
+
+   The bare binary (`NexusGrid.exe` / `NexusGrid-macos` / `NexusGrid-linux`) is
+   the **auto-update target** for that OS. The Windows `…-Setup-<ver>.exe` is the
+   installer humans download for a first install; macOS/Linux ship the bare
+   binary only (no installer).
+
+3. **Sign one manifest** covering every platform you built (this mints the fresh
+   release key, gets it certified by the root, and hashes each binary). Pass a
+   `URL PATH` pair per platform — the URL is where that binary will live on the
+   release, the path is the local file to hash. Provide the offline **root** key
+   first:
    ```
    set NEXUS_ROOT_PRIVKEY=<base64 root private key>    # Windows (or --root-key-file PATH)
    python tools/sign_release.py 1.0.1 ^
-       "https://github.com/Tharunvipperla/NexusGrid-releases/releases/download/v1.0.1/NexusGrid.exe" ^
-       dist\NexusGrid.exe ^                                     # local path, for the hash
+       --win   "https://github.com/Tharunvipperla/NexusGrid-releases/releases/download/v1.0.1/NexusGrid.exe"   dist\NexusGrid.exe ^
+       --mac   "https://github.com/Tharunvipperla/NexusGrid-releases/releases/download/v1.0.1/NexusGrid-macos" dist\NexusGrid-macos ^
+       --linux "https://github.com/Tharunvipperla/NexusGrid-releases/releases/download/v1.0.1/NexusGrid-linux" dist\NexusGrid-linux ^
        --notes "https://github.com/Tharunvipperla/NexusGrid-releases/releases/tag/v1.0.1" ^
        --min-version 1.0.0 ^
        --out manifest.json
    ```
-   > ⚠️ The manifest `url` must point at the **bare `NexusGrid.exe`**, never the
-   > installer — the auto-updater downloads that file and swaps the running exe in
-   > place. Pointing it at the installer would replace the app with an installer.
+   > ⚠️ Each `url` must point at a **bare binary**, never the installer — the
+   > auto-updater downloads that file and swaps the running binary in place. A
+   > node downloads only the entry for its own OS. (Windows-only releases can pass
+   > just `--win`; the manifest stays backward-compatible with older nodes.)
 
 4. **Publish** a GitHub release in **`NexusGrid-releases`** with tag `v1.0.1` and
-   attach **all three**:
+   attach the manifest, every bare binary, and the Windows installer:
    - `manifest.json`  — what nodes fetch (`…/releases/latest/download/manifest.json`)
-   - `NexusGrid.exe`  — the auto-update binary (the `url` from step 3)
-   - `NexusGrid-Setup-1.0.1.exe` — the installer humans download for a fresh install
+   - `NexusGrid.exe`, `NexusGrid-macos`, `NexusGrid-linux` — the auto-update
+     binaries (the `url`s from step 3)
+   - `NexusGrid-Setup-1.0.1.exe` — the Windows installer for a fresh install
 
 5. Done. Installed nodes detect the new version on their next check and offer the
    user **Update now** (which pulls the bare exe and swaps it).
@@ -204,9 +216,15 @@ auto-revert if the new exe fails its `/health` check on boot.)
 {
   "version":      "0.3.0",
   "url":          "https://downloads.example.com/NexusGrid-0.3.0.exe",
-  "sha256":       "<hex sha256 of the exe>",
+  "sha256":       "<hex sha256 of the Windows exe>",
   "min_version":  "0.1.0",
   "notes_url":    "https://example.com/releases/0.3.0",
+  "platforms": {
+    "windows": { "url": "https://…/NexusGrid.exe",   "sha256": "<hex>" },
+    "macos":   { "url": "https://…/NexusGrid-macos", "sha256": "<hex>" },
+    "linux":   { "url": "https://…/NexusGrid-linux", "sha256": "<hex>" }
+  },
+  "platforms_sig": "<base64 RELEASE-KEY signature over the platforms map>",
   "cert": {
     "signing_pubkey": "<base64 release public key>",
     "key_id":         "<sha256(release pubkey)[:16]>",
@@ -220,6 +238,11 @@ auto-revert if the new exe fails its `/health` check on boot.)
 
 - `sig` covers exactly `version, url, sha256, min_version, notes_url` (canonical,
   sorted-key JSON), signed by the **release** key in `cert.signing_pubkey`.
+- `platforms` maps each OS to its bare binary; `platforms_sig` is the **release**
+  key's signature over that map. A node downloads the entry for its own OS. The
+  top-level `url`/`sha256` are the **Windows** binary, kept so nodes that predate
+  the platform map still update. `platforms` is optional — a Windows-only release
+  omits it and stays valid.
 - `cert_sig` covers exactly `signing_pubkey, key_id, not_after, created`, signed
   by the **root** key (the one baked in as `ROOT_PUBKEY_B64`).
 
@@ -289,11 +312,13 @@ Two GitHub Actions workflows (repo root `.github/workflows/`):
 - **`ci.yml`** — on every push to `main` and every PR: runs the full backend
   test suite (`pytest`) and builds + tests the UI bundle. This is the gate that
   catches regressions. Holds no secrets.
-- **`release.yml`** — on a version **tag** (`vX.Y.Z`): builds the Windows exe on
-  a `windows-latest` runner and uploads it as a build artifact (`NexusGrid-exe`).
-  **It does not sign** — signing is offline by design (the root key never touches
-  CI). Your loop is: tag → download the artifact → `sign_release.py` locally →
-  publish exe + manifest to the `NexusGrid-releases` repo.
+- **`release.yml`** — on a version **tag** (`vX.Y.Z`): a build **matrix** runs on
+  `windows-latest`, `macos-latest` and `ubuntu-latest`, producing one artifact per
+  OS (`NexusGrid-windows` with the exe + installer, `NexusGrid-macos`,
+  `NexusGrid-linux`). **It does not sign** — signing is offline by design (the root
+  key never touches CI). Your loop is: tag → download the artifacts →
+  `sign_release.py` locally (one manifest, all platforms) → publish the binaries +
+  manifest to the `NexusGrid-releases` repo.
 
 Run the suite locally before tagging: `pytest -q`.
 

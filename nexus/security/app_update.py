@@ -33,10 +33,14 @@ ROOT_PUBKEY_B64 = "OPGgu/WrNrX59Uv3bPofYil7DtwF90UMrMVj7bdfaXQ="
 # cert is otherwise valid (ship a build to push a revocation before expiry).
 REVOKED_KEY_IDS: frozenset[str] = frozenset()
 
-# Manifest fields the release key signs (everything a node acts on).
+# Manifest fields the release key signs (everything a node acts on). The
+# top-level url/sha256 are the Windows binary — kept for backward compatibility
+# with nodes that predate the per-platform map below, which read these directly.
 SIGNED_FIELDS = ("version", "url", "sha256", "min_version", "notes_url")
 # Delegation-cert fields the root signs.
 CERT_FIELDS = ("signing_pubkey", "key_id", "not_after", "created")
+# Per-platform binary map keys (sys.platform → one of these; see updater.py).
+PLATFORM_KEYS = ("windows", "macos", "linux")
 
 
 def _canon(d: dict, fields: tuple[str, ...]) -> bytes:
@@ -50,6 +54,20 @@ def _canon(d: dict, fields: tuple[str, ...]) -> bytes:
 def canonical_bytes(manifest: dict) -> bytes:
     """Bytes the release key signs (the manifest facts)."""
     return _canon(manifest, SIGNED_FIELDS)
+
+
+def platforms_bytes(platforms: dict) -> bytes:
+    """Bytes the release key signs for the per-platform binary map.
+
+    Normalised to ``{platform: {"url":…, "sha256":…}}`` with only known keys, so
+    signing (``sign_release.py``) and verifying produce identical bytes.
+    """
+    norm = {
+        k: {"url": str(platforms[k].get("url", "")), "sha256": str(platforms[k].get("sha256", ""))}
+        for k in PLATFORM_KEYS
+        if isinstance(platforms.get(k), dict)
+    }
+    return json.dumps(norm, separators=(",", ":"), sort_keys=True).encode()
 
 
 def cert_bytes(cert: dict) -> bytes:
@@ -92,4 +110,12 @@ def verify_release(manifest: dict) -> tuple[bool, str]:
     # 4. release key signs the manifest facts
     if not _verify(str(cert.get("signing_pubkey", "")), canonical_bytes(manifest), str(manifest.get("sig", ""))):
         return False, "manifest not signed by the certified release key"
+    # 5. if a per-platform binary map is present, the same release key signs it.
+    #    (Legacy Windows-only manifests omit it and are still valid.)
+    plats = manifest.get("platforms")
+    if plats is not None:
+        if not isinstance(plats, dict):
+            return False, "platforms is not a map"
+        if not _verify(str(cert.get("signing_pubkey", "")), platforms_bytes(plats), str(manifest.get("platforms_sig", ""))):
+            return False, "platform map not signed by the certified release key"
     return True, ""

@@ -51,6 +51,9 @@ def make_manifest(root, version="1.1.0", *, rel=None, days=90, **over):
     }
     m.update(over)
     m["sig"] = base64.b64encode(rel.sign(au.canonical_bytes(m))).decode()
+    # If a per-platform binary map was supplied, the same release key signs it.
+    if "platforms" in m:
+        m["platforms_sig"] = base64.b64encode(rel.sign(au.platforms_bytes(m["platforms"]))).decode()
     return m
 
 
@@ -108,6 +111,66 @@ def test_uncertified_key_cannot_sign(monkeypatch):
     m["sig"] = base64.b64encode(evil.sign(au.canonical_bytes(m))).decode()
     ok, reason = au.verify_release(m)
     assert not ok
+
+
+# --- per-platform binary map ----------------------------------------------
+
+_PLATFORMS = {
+    "windows": {"url": "https://h/NexusGrid.exe", "sha256": "winsha"},
+    "macos": {"url": "https://h/NexusGrid-macos", "sha256": "macsha"},
+    "linux": {"url": "https://h/NexusGrid-linux", "sha256": "linsha"},
+}
+
+
+def test_multi_platform_manifest_verifies(monkeypatch):
+    root = _use_root(monkeypatch)
+    m = make_manifest(root, platforms=_PLATFORMS)
+    ok, reason = au.verify_release(m)
+    assert ok and reason == ""
+
+
+def test_platform_map_tamper_rejected(monkeypatch):
+    root = _use_root(monkeypatch)
+    m = make_manifest(root, platforms=_PLATFORMS)
+    m["platforms"]["macos"]["url"] = "https://evil/x"   # change after signing
+    ok, reason = au.verify_release(m)
+    assert not ok and "platform map" in reason
+
+
+def test_legacy_manifest_without_platforms_still_verifies(monkeypatch):
+    root = _use_root(monkeypatch)
+    m = make_manifest(root)                              # no platforms key at all
+    assert "platforms" not in m
+    ok, reason = au.verify_release(m)
+    assert ok and reason == ""
+
+
+def test_pick_download_per_platform(monkeypatch):
+    m = make_manifest(_key(), platforms=_PLATFORMS)
+    for plat, key in (("win32", "windows"), ("darwin", "macos"), ("linux2", "linux")):
+        monkeypatch.setattr(updater.sys, "platform", plat)
+        assert updater._pick_download(m) == (_PLATFORMS[key]["url"], _PLATFORMS[key]["sha256"])
+
+
+def test_pick_download_legacy_windows_only(monkeypatch):
+    # A legacy manifest (top-level url/sha256, no platforms) serves Windows only.
+    m = {"url": "https://h/NexusGrid.exe", "sha256": "winsha"}
+    monkeypatch.setattr(updater.sys, "platform", "win32")
+    assert updater._pick_download(m) == ("https://h/NexusGrid.exe", "winsha")
+    monkeypatch.setattr(updater.sys, "platform", "darwin")
+    assert updater._pick_download(m) is None             # nothing to install on mac
+
+
+def test_check_not_available_without_binary_for_platform(monkeypatch, tmp_path):
+    root = _use_root(monkeypatch)
+    monkeypatch.setattr(updater, "__version__", "1.0.0")
+    monkeypatch.setattr(updater.sys, "platform", "darwin")
+    # newer release, but only a Windows binary published
+    m = make_manifest(root, version="1.1.0", platforms={"windows": _PLATFORMS["windows"]})
+    mf = tmp_path / "manifest.json"
+    mf.write_text(json.dumps(m))
+    monkeypatch.setenv("NEXUS_UPDATE_MANIFEST_URL", str(mf))
+    assert asyncio.run(updater.check())["available"] is False
 
 
 # --- version comparison ----------------------------------------------------

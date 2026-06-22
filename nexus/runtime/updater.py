@@ -43,6 +43,31 @@ def manifest_url() -> str:
     return override.strip() if override is not None else DEFAULT_MANIFEST_URL
 
 
+def _platform_key() -> str:
+    """Map the running OS to a manifest ``platforms`` key."""
+    if sys.platform.startswith("win"):
+        return "windows"
+    if sys.platform == "darwin":
+        return "macos"
+    return "linux"
+
+
+def _pick_download(m: dict) -> tuple[str, str] | None:
+    """The (url, sha256) for this OS, or None if the release has no binary for it.
+
+    Prefers the signed per-platform map; falls back to the legacy top-level
+    url/sha256 (Windows-only manifests). Returns None on other platforms when
+    the map lacks an entry — there is nothing safe to install.
+    """
+    key = _platform_key()
+    entry = (m.get("platforms") or {}).get(key)
+    if isinstance(entry, dict) and entry.get("url") and entry.get("sha256"):
+        return str(entry["url"]), str(entry["sha256"])
+    if key == "windows" and m.get("url") and m.get("sha256"):
+        return str(m["url"]), str(m["sha256"])
+    return None
+
+
 def _ver_tuple(v: str) -> tuple[int, ...]:
     out = []
     for part in str(v).split("."):
@@ -87,10 +112,12 @@ async def check() -> dict:
     if not m:
         return {"current": cur, "latest": cur, "available": False, "notes_url": ""}
     latest = str(m.get("version", cur))
+    # Only offer the update if it's newer AND this OS actually has a binary.
+    available = _ver_tuple(latest) > _ver_tuple(cur) and _pick_download(m) is not None
     return {
         "current": cur,
         "latest": latest,
-        "available": _ver_tuple(latest) > _ver_tuple(cur),
+        "available": available,
         "notes_url": m.get("notes_url", ""),
         # A release can flag itself as potentially destructive (schema/data
         # changes) so the UI can warn the user to back up first. Optional —
@@ -159,9 +186,10 @@ async def apply() -> dict:
     if _ver_tuple(latest) <= _ver_tuple(__version__):
         raise RuntimeError("already up to date")
 
-    url, want_sha = str(m.get("url", "")), str(m.get("sha256", ""))
-    if not url or not want_sha:
-        raise RuntimeError("manifest missing url/sha256")
+    picked = _pick_download(m)
+    if picked is None:
+        raise RuntimeError(f"no build published for this platform ({_platform_key()})")
+    url, want_sha = picked
 
     data = await asyncio.to_thread(_read_source, url)
     got_sha = hashlib.sha256(data).hexdigest()

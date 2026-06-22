@@ -1,13 +1,18 @@
-name: Build release binary
+name: Build release binaries
 
-# On a version tag (e.g. `git tag v1.0.1 && git push origin v1.0.1`) this builds
-# the Windows binary on a clean runner and uploads it as a workflow artifact.
+# On a version tag (e.g. `git tag v1.1.0 && git push origin v1.1.0`) this builds
+# the binary for Windows, macOS and Linux on clean runners and uploads each as a
+# workflow artifact.
 #
 # It deliberately does NOT sign and holds NO secrets — signing is offline by
 # design (your root key never touches CI). Your release loop:
-#   1. push the tag  -> download the `NexusGrid-exe` artifact from this run
-#   2. sign it locally:  python tools/sign_release.py <ver> <url> NexusGrid.exe --out manifest.json
-#   3. create a GitHub release in NexusGrid-releases with NexusGrid.exe + manifest.json
+#   1. push the tag  -> download the per-OS artifacts from this run
+#   2. sign them locally into ONE manifest:
+#        python tools/sign_release.py <ver> \
+#          --win   <url> NexusGrid.exe \
+#          --mac   <url> NexusGrid-macos \
+#          --linux <url> NexusGrid-linux  --out manifest.json
+#   3. create a GitHub release in NexusGrid-releases with all binaries + manifest.json
 # See release/RELEASING.md.
 on:
   push:
@@ -18,7 +23,11 @@ permissions:
 
 jobs:
   build:
-    runs-on: windows-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [windows-latest, macos-latest, ubuntu-latest]
+    runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -30,15 +39,45 @@ jobs:
           node-version: "20"
       - name: Install build deps
         run: pip install -e . pyinstaller
-      - name: Install Inno Setup (for the installer)
+
+      # --- Windows: bare exe + Inno Setup installer ---
+      - name: Install Inno Setup (Windows installer)
+        if: runner.os == 'Windows'
         run: choco install innosetup -y --no-progress
-      - name: Build (webui bundle + PyInstaller + Inno Setup installer)
+      - name: Build (Windows)
+        if: runner.os == 'Windows'
         run: build\build_installer.bat
-      - name: Upload the binary + installer artifacts
+      - name: Upload Windows artifacts
+        if: runner.os == 'Windows'
         uses: actions/upload-artifact@v4
         with:
-          name: NexusGrid-release-artifacts
+          name: NexusGrid-windows
           path: |
             dist/NexusGrid.exe
             dist/NexusGrid-Setup-*.exe
+          if-no-files-found: error
+
+      # --- macOS / Linux: bare binary (no installer) ---
+      - name: Build (macOS / Linux)
+        if: runner.os != 'Windows'
+        run: bash build/build.sh
+      - name: Name the macOS binary
+        if: runner.os == 'macOS'
+        run: mv dist/NexusGrid dist/NexusGrid-macos
+      - name: Upload macOS artifact
+        if: runner.os == 'macOS'
+        uses: actions/upload-artifact@v4
+        with:
+          name: NexusGrid-macos
+          path: dist/NexusGrid-macos
+          if-no-files-found: error
+      - name: Name the Linux binary
+        if: runner.os == 'Linux'
+        run: mv dist/NexusGrid dist/NexusGrid-linux
+      - name: Upload Linux artifact
+        if: runner.os == 'Linux'
+        uses: actions/upload-artifact@v4
+        with:
+          name: NexusGrid-linux
+          path: dist/NexusGrid-linux
           if-no-files-found: error
