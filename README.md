@@ -6,6 +6,8 @@
 
 **A peer-to-peer compute and storage grid for you and the people you trust.**
 
+![NexusGrid live topology — peers connected in a grid](docs/screenshot-topology.png)
+
 NexusGrid pools the compute and storage of machines *you* and people you trust own
 — no central server, no account, no cloud middleman. Each machine runs one node
 (a local web app on `127.0.0.1`); nodes find each other on your LAN or through a
@@ -47,6 +49,8 @@ Verify any download against the `sha256` recorded in the release's `manifest.jso
 - **Connect privately** — groups with Ed25519 identity, private messaging, and relays that punch through NAT/firewalls.
 - **Extend & integrate** — drop-in plugins (relays, runners, pumps, DB providers), a local REST API + Python SDK/CLI, and outbound webhooks.
 - **Operate with confidence** — live telemetry, encrypted backup/restore, and cryptographically **signed auto-updates**.
+
+![NexusGrid dispatcher — building a multi-step DAG workflow](docs/screenshot-dispatcher.png)
 
 ## Quick start (from source)
 
