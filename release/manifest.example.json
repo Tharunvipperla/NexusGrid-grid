@@ -1,0 +1,21 @@
+{
+  "_comment": "Example release manifest. Fill in real values, then sign with tools/sign_release.py. The node verifies: root signs `cert` (cert_sig) -> the certified `cert.signing_pubkey` signs the SIGNED_FIELDS below (sig) -> the downloaded binary's sha256 must match. See nexus/security/app_update.py.",
+
+  "version": "1.0.1",
+  "url": "https://github.com/<owner>/<releases-repo>/releases/download/v1.0.1/NexusGrid.exe",
+  "sha256": "<hex sha256 of the binary at `url`>",
+  "min_version": "1.0.0",
+  "notes_url": "https://github.com/<owner>/<releases-repo>/releases/tag/v1.0.1",
+
+  "breaking": false,
+  "breaking_note": "",
+
+  "cert": {
+    "signing_pubkey": "<base64 Ed25519 release pubkey>",
+    "key_id": "release-2026-06",
+    "not_after": "2026-12-31T00:00:00+00:00",
+    "created": "2026-06-21T00:00:00+00:00"
+  },
+  "cert_sig": "<base64 Ed25519 signature over the cert, by the ROOT key>",
+  "sig": "<base64 Ed25519 signature over the signed fields, by cert.signing_pubkey>"
+}

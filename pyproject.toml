@@ -1,0 +1,24 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "nexus"
+version = "0.2.0"
+description = "NexusGrid — modular peer-to-peer distributed compute grid"
+requires-python = ">=3.10"
+dynamic = ["dependencies"]
+
+[tool.setuptools.dynamic]
+dependencies = { file = ["requirements.txt"] }
+
+[project.optional-dependencies]
+# Test tooling (not required at runtime). Install with: pip install -e .[test]
+test = ["pytest>=8", "hypothesis>=6", "pip-audit>=2.10", "bandit>=1.9"]
+
+[tool.setuptools.packages.find]
+include = ["nexus*"]
+exclude = ["build*", "dist*"]
+
+[project.scripts]
+nexus = "nexus.__main__:main"

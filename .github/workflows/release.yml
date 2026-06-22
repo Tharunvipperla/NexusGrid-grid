@@ -1,0 +1,44 @@
+name: Build release binary
+
+# On a version tag (e.g. `git tag v1.0.1 && git push origin v1.0.1`) this builds
+# the Windows binary on a clean runner and uploads it as a workflow artifact.
+#
+# It deliberately does NOT sign and holds NO secrets — signing is offline by
+# design (your root key never touches CI). Your release loop:
+#   1. push the tag  -> download the `NexusGrid-exe` artifact from this run
+#   2. sign it locally:  python tools/sign_release.py <ver> <url> NexusGrid.exe --out manifest.json
+#   3. create a GitHub release in NexusGrid-releases with NexusGrid.exe + manifest.json
+# See release/RELEASING.md.
+on:
+  push:
+    tags: ["v*"]
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - name: Install build deps
+        run: pip install -e . pyinstaller
+      - name: Install Inno Setup (for the installer)
+        run: choco install innosetup -y --no-progress
+      - name: Build (webui bundle + PyInstaller + Inno Setup installer)
+        run: build\build_installer.bat
+      - name: Upload the binary + installer artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: NexusGrid-release-artifacts
+          path: |
+            dist/NexusGrid.exe
+            dist/NexusGrid-Setup-*.exe
+          if-no-files-found: error

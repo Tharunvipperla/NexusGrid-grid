@@ -1,0 +1,51 @@
+# Python bytecode
+__pycache__/
+*.py[cod]
+*.egg-info/
+
+# Runtime-generated secrets (never commit)
+.nexus_local_token
+.nexus_secret
+.nexus_group_key
+.nexus_cert.pem
+.nexus_key.pem
+
+# Local test-node directories (exe + secrets + DBs — never commit)
+node-*/
+
+# Runtime databases + per-port caches
+nexus_mod_*.db
+nexus_mod_*.db-shm
+nexus_mod_*.db-wal
+nexus_cache_*/
+nexus_pip_cache/
+nexus_venv_cache/
+nexus_node_cache/
+nexus_packages/
+
+# Runtime user-data dirs the node creates (drop-in plugins, task artifacts).
+# Bundled defaults live inside nexus/; these top-level dirs are user/runtime data.
+nexus_relays/
+nexus_runners/
+nexus_pumps/
+nexus_dbproviders/
+completed_tasks/
+restore_pending.zip
+
+# Test-node working dirs (e.g. the node-A/B/C/D from the manual playbook) — these
+# hold runtime secrets + binaries; never commit them.
+node-[A-Z]/
+
+# Release signing keys — MUST stay out of git (kept offline). Manifests/templates
+# are fine; private keys are not.
+release/keys/
+release/*.key
+release/*.pem
+
+# Build output
+dist/
+build/_work/
+build/_work_new/
+build/NexusGrid/
+*.exe
+*.spec.bak

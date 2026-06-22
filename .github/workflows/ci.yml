@@ -1,0 +1,41 @@
+name: CI
+
+# Runs the test suites on every push to main and every pull request.
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  backend:
+    name: Backend tests (pytest)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - name: Install (with test extras)
+        run: pip install -e ".[test]"
+      - name: Run tests
+        run: python -m pytest -q
+      - name: Security lint (advisory)
+        run: |
+          python -m bandit -r nexus -ll || true
+          python -m pip_audit || true
+
+  frontend:
+    name: Frontend (build + tests)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - name: Install
+        run: cd webui && npm ci
+      - name: Build bundle
+        run: cd webui && npm run build
+      - name: Unit tests
+        run: cd webui && npm test

@@ -1,0 +1,19 @@
+# Nexus Relay Server — standalone deployment image.
+#
+# Build from the Phase-2 root (the context must include nexus/relay/server.py):
+#   docker build -f deploy/Dockerfile.relay -t nexus-relay .
+#   docker run -d -p 9000:9000 -e NEXUS_GRID_KEY=your-shared-secret nexus-relay
+#
+# Put this behind a TLS-terminating reverse proxy (or a platform that
+# provides HTTPS) so nodes can reach it as wss://… on port 443 — that is
+# what lets the connection pass through corporate firewalls and CGNAT.
+FROM python:3.12-slim
+
+WORKDIR /app
+RUN pip install --no-cache-dir "fastapi>=0.110" "uvicorn[standard]>=0.29"
+COPY nexus/relay/server.py .
+
+ENV PORT=9000
+EXPOSE 9000
+
+CMD ["python", "server.py"]
