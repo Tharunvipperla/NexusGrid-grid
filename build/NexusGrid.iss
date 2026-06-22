@@ -17,7 +17,11 @@
 ; or run build\build_installer.bat which does both.
 
 #define MyAppName "NexusGrid"
-#define MyAppVersion "1.0.0"
+; Version is passed by build_installer.bat (/DMyAppVersion=<ver>, read from
+; nexus/__init__.py). The fallback here only applies if ISCC is run by hand.
+#ifndef MyAppVersion
+  #define MyAppVersion "1.1.0"
+#endif
 #define MyAppPublisher "NexusGrid"
 #define MyAppExeName "NexusGrid.exe"
 
