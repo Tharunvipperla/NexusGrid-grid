@@ -114,6 +114,10 @@ A single comprehensive pass so nothing is documented twice as features settle:
 Make the grid more powerful for the people already using it, and easier to build
 on.
 
+- **GPU passthrough for tasks & services** *(next up)* — forward the host GPU into
+  task and service containers (opt-in per node) so self-hosted LLMs, training, and
+  other accelerated workloads run on hardware instead of CPU. We provide the
+  framework; you bring the image and the model.
 - **IDE extensions (VS Code + JetBrains)** — submit tasks/DAGs, browse results,
   and manage services without leaving the editor, built as thin clients over the
   existing local API and generated SDK.
