@@ -4,6 +4,15 @@ User-facing release notes. The in-app **What's new** panel (notification bell)
 reads this file via `/local/whats_new`. Newest version first; one `## [version] - date`
 header per release, then `-` bullets for the highlights people actually notice.
 
+## [1.2.0] - 2026-06-22
+- **GPU passthrough** — give a task or a hosted service the host's GPU (NVIDIA, via
+  `--gpus`) so self-hosted LLMs, rendering, and other accelerated work run on
+  hardware instead of CPU. In the Services editor it's a one-tap **GPU toggle** (a
+  count slider on multi-GPU hosts); native-runtime tasks already see the host GPU.
+  GPU-required dispatch/DAG work is routed only to GPU-capable workers. Note: GPU
+  sharing isn't throttled — a service gets the full card (RAM/CPU ceilings still
+  apply; GPU has no enforced cap on consumer hardware).
+
 ## [1.1.0] - 2026-06-22
 - **macOS & Linux builds** — NexusGrid now ships native binaries for macOS and
   Linux alongside Windows. Auto-update downloads the build for your own OS; the
