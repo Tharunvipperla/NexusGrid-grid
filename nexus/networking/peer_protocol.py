@@ -1,6 +1,6 @@
 """Grid-key HMAC, join-request signing, per-IP rate limit.
 
-Extracted from Phase-1/node_modified.py:
+Extracted from node_modified.py:
 
 * ``_check_join_rate_limit`` — lines 705-716
 * ``_verify_join_hmac`` — lines 719-734
@@ -36,7 +36,7 @@ def set_grid_key_provider(provider: GridKeyProvider | None) -> None:
 
     Wired from :mod:`nexus.app` at startup. When no provider is set,
     :func:`_grid_key` returns ``""`` and HMAC verification is skipped —
-    matching Phase-1 behaviour when the key is unconfigured.
+    matching the original implementation behaviour when the key is unconfigured.
     """
     global _grid_key_provider
     _grid_key_provider = provider
@@ -77,7 +77,7 @@ def verify_join_hmac(data: dict) -> bool:
     """Verify ``data["join_hmac"]`` against the expected signature.
 
     When no grid key is configured, verification is skipped (returns
-    ``True``) to preserve Phase-1's opt-in security model.
+    ``True``) to preserve the original implementation's opt-in security model.
     """
     grid_key = _grid_key()
     if not grid_key:
@@ -100,7 +100,7 @@ def sign_callback_hmac(node_uuid: str, responder_address: str) -> str:
     Callback endpoints are auth-less by design (a callback is a reply to a
     join request the local node initiated), so the HMAC is the only thing
     that proves the sender knows the grid key. Returns ``""`` when no grid
-    key is configured, matching Phase-1's opt-in security model.
+    key is configured, matching the original implementation's opt-in security model.
     """
     grid_key = _grid_key()
     if not grid_key:
@@ -113,7 +113,7 @@ def verify_callback_hmac(data: dict) -> bool:
     """Verify ``data["callback_hmac"]`` for a ``/peer/callback_*`` payload.
 
     When no grid key is configured, verification is skipped (returns
-    ``True``) to preserve Phase-1's opt-in security model.
+    ``True``) to preserve the original implementation's opt-in security model.
     """
     grid_key = _grid_key()
     if not grid_key:

@@ -1,6 +1,6 @@
 """UDP-broadcast discovery on port 34567.
 
-Extracted from Phase-1/node_modified.py:
+Extracted from node_modified.py:
 
 * ``UDPDiscoveryProtocol`` — lines 2730-2762
 * ``create_datagram_endpoint`` wiring — lines 6069-6075
@@ -86,7 +86,7 @@ async def start_discovery(port: int = DEFAULT_DISCOVERY_PORT):
 def lookup_discovered_peer(ip_port: str) -> tuple[str | None, tuple | None]:
     """Resolve *ip_port* to a ``(uuid, entry)`` in ``STATE.discovered_peers``.
 
-    Ported from Phase-1/node_modified.py (``_lookup_discovered_peer`` at
+    Ported from node_modified.py (``_lookup_discovered_peer`` at
     lines 880-925). Walks several matching strategies so a peer discovered
     by UUID via beacon is still reachable when the caller only has the raw
     LAN IP (and vice versa).

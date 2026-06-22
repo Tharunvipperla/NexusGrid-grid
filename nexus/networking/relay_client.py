@@ -1,6 +1,6 @@
 """Relay WebSocket connection + HTTP-over-relay bridge.
 
-Ported from Phase-1/node_modified.py:
+Ported from node_modified.py:
 
 * ``_get_relay_url`` / ``_get_grid_key`` — lines 4900-4914
 * ``relay_send`` / ``relay_send_to_peer`` — lines 4917-4934

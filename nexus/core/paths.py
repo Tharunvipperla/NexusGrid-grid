@@ -1,6 +1,6 @@
 """File-system paths, PyInstaller-safe resource lookup, and file permission helpers.
 
-Extracted from Phase-1/node_modified.py (lines 100-123).
+Extracted from node_modified.py (lines 100-123).
 
 Design notes
 ------------
@@ -49,7 +49,7 @@ def _resolve_base_dir() -> Path:
     2. Packaged build → the per-user app-data dir (so a downloaded ``.exe`` run
        from Downloads doesn't litter that folder — its state lives under
        ``%LOCALAPPDATA%\\NexusGrid`` etc.).
-    3. Running from source → the repo's ``Phase-2`` dir (unchanged dev behavior).
+    3. Running from source → the repository root (unchanged dev behavior).
     """
     override = os.environ.get("NEXUS_DATA_DIR", "").strip()
     if override:

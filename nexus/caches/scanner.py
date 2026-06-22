@@ -1,6 +1,6 @@
 """Language-agnostic workspace dependency scanner.
 
-Extracted from Phase-1/node_modified.py (lines 981-1302).
+Extracted from node_modified.py (lines 981-1302).
 
 ``scan_workspace_dependencies(workspace_dir, entrypoint)`` is the single
 entry point. It autodetects the language from the entrypoint command and

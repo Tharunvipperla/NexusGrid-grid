@@ -1,4 +1,4 @@
-"""Pytest fixtures shared across the Phase-2 test suite.
+"""Pytest fixtures shared across the test suite.
 
 Tests build small FastAPI apps from individual routers rather than
 ``nexus.app.create_app``: the full lifespan opens a SQLite DB, starts

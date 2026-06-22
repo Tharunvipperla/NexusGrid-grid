@@ -1,6 +1,6 @@
 """Cache root directories + content-addressable cache keys.
 
-Extracted from Phase-1/node_modified.py:
+Extracted from node_modified.py:
 
 * ``_venv_cache_root`` / ``_pip_wheel_cache_dir`` / ``_node_cache_root``
   — lines 1059-1088

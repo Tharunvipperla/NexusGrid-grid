@@ -1,6 +1,6 @@
 """Numeric counters and the periodic observability loop.
 
-Extracted from Phase-1/node_modified.py (line 494, 1558-1560, 5800-…).
+Extracted from node_modified.py (line 494, 1558-1560, 5800-…).
 
 Metrics live in :data:`nexus.core.STATE.metrics`, a ``defaultdict(int)``
 shared with the UI. Callers ``incr_metric("tasks_dispatched")`` on hot

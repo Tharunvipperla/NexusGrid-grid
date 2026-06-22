@@ -1,6 +1,6 @@
 """Cluster rollup + rules-based health analyzer.
 
-Extracted from Phase-1/node_modified.py:
+Extracted from node_modified.py:
 
 * ``compute_cluster_rollup`` — lines 1916-1943
 * ``analyze_cluster_health`` — lines 1946-2004
@@ -15,7 +15,7 @@ The health analyzer also pulls two process-wide bits of state:
 * Relay connection status — exposed via
   :func:`nexus.networking.relay_client.relay_status` once the relay
   client lands (Step 9); until then the analyzer safely no-ops that branch
-  via a ``try/except NameError`` mirror of Phase-1's behaviour.
+  via a ``try/except NameError`` mirror of the original implementation's behaviour.
 """
 
 from __future__ import annotations
@@ -24,7 +24,7 @@ import time
 
 from nexus.core import STATE
 
-# Phase-1 constant — surfaced through this module because rollup is the
+# the original implementation constant — surfaced through this module because rollup is the
 # sole consumer today. Moved here to avoid adding another top-level in
 # :mod:`nexus.core.constants` for a single use site.
 LONG_RUN_WARN_SEC = 1800
@@ -133,7 +133,7 @@ def analyze_cluster_health(net: dict) -> list[dict]:
     # Relay status — only meaningful once the relay client is ported (Step 9).
     # Until then ``STATE.relay_connected`` stays False, and the "last error"
     # key is absent, so this branch is a no-op. The try/except mirrors the
-    # Phase-1 ``NameError`` guard.
+    # the original implementation ``NameError`` guard.
     try:
         if not STATE.relay_connected and getattr(STATE, "relay_last_error", ""):
             out.append({

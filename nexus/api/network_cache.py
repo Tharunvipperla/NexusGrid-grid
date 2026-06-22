@@ -1,10 +1,10 @@
 """Single-process cache for the ``/local/network`` response.
 
-Extracted from Phase-1/node_modified.py (lines 8200-8201 + the check at
+Extracted from node_modified.py (lines 8200-8201 + the check at
 the head of ``local_get_network_graph`` on line 8206).
 
 The UI polls ``/local/network`` frequently; assembling the full network
-dict can be expensive. Phase-1 keeps a one-second-TTL cache plus a
+dict can be expensive. the original implementation keeps a one-second-TTL cache plus a
 monotonic revision counter so the client can short-circuit with
 ``?since=<rev>`` when nothing changed.
 

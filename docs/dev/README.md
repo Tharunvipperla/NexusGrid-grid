@@ -26,16 +26,15 @@ The UI is a React app in `webui/` (esbuild → `webui/dist/bundle.js`, served by
 `nexus/ui/serve.py` with the local token injected into the page).
 
 ```bash
-# Run the node (dev)
-cd Phase-2
+# Run the node (dev) — from the repository root
 pip install -e .[test]        # runtime deps + pytest/hypothesis
 python -m nexus               # starts the node, opens the UI
 
 # Build the UI bundle after editing webui/src
 cd webui && npm install && npm run build
 
-# Run the tests
-cd Phase-2 && python -m pytest -q
+# Run the tests (from the repository root)
+python -m pytest -q
 ```
 
 ## Ground rules (read before you change anything)

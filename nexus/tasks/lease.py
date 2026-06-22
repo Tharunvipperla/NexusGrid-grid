@@ -1,6 +1,6 @@
 """Worker lease creation / refresh / expiration.
 
-Extracted from Phase-1/node_modified.py (lines 1814-1834).
+Extracted from node_modified.py (lines 1814-1834).
 
 A lease is metadata stored in the task env_vars:
 

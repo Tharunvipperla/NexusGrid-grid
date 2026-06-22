@@ -1,10 +1,10 @@
 @echo off
-REM Developer mode launcher for Phase-2.
+REM Developer mode launcher.
 REM Runs the backend directly from source with uvicorn --reload.
 REM Any edit under nexus/ triggers a restart; no PyInstaller build required.
 
 setlocal
-REM This script lives in scripts/; run from the Phase-2 root so `nexus` imports.
+REM This script lives in scripts/; run from the repository root so `nexus` imports.
 cd /d "%~dp0.."
 set PYTHONDONTWRITEBYTECODE=1
 

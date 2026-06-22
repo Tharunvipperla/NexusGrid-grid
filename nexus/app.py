@@ -1,6 +1,6 @@
 """FastAPI application factory and lifespan wiring.
 
-Ported to parity with Phase-1/node_modified.py ``lifespan`` (lines 6008-6136)
+Ported to parity with node_modified.py ``lifespan`` (lines 6008-6136)
 and the CORS block (lines 6139-6161). Startup flow:
 
 1. Record node port (needed by identity, cache_dir, audit actors).
@@ -443,7 +443,7 @@ def create_app(args=None):
     app = FastAPI(title="NexusGrid", version=_app_version, lifespan=lifespan)
 
     # --- CORS ---------------------------------------------------------
-    # Phase-1 parity: restrict origins to loopback + local-IP:port unless
+    # the original implementation parity: restrict origins to loopback + local-IP:port unless
     # ``NEXUS_CORS_ORIGINS`` explicitly overrides.
     from nexus.utils.net import get_local_ip
 

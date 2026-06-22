@@ -1,6 +1,6 @@
 /* App root — fetches live node data, routes screens, applies theme.
  *
- * Phase 1 of the v3 UI rebuild: the shell + Overview are wired to real
+ * The first stage of the v3 UI rebuild: the shell + Overview are wired to real
  * endpoints; the remaining screens render a Placeholder until later waves
  * port them. The classic UI stays the default at "/". */
 import React from "react";

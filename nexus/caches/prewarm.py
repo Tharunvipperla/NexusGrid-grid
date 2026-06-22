@@ -1,6 +1,6 @@
 """Background venv prewarm worker.
 
-Ported from Phase-1/node_modified.py:
+Ported from node_modified.py:
 
 * ``PREWARM_JOBS`` dict — line 7854
 * ``_prewarm_job_set`` / ``_prewarm_job_append`` — lines 7857-7865

@@ -1,6 +1,6 @@
 """Docker security profiles.
 
-Extracted from Phase-1/node_modified.py (lines 1458-1475).
+Extracted from node_modified.py (lines 1458-1475).
 
 Four profiles map to the UI radio group in ``index.html``:
 

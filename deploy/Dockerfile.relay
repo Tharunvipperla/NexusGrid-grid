@@ -1,6 +1,6 @@
 # Nexus Relay Server — standalone deployment image.
 #
-# Build from the Phase-2 root (the context must include nexus/relay/server.py):
+# Build from the repository root (the context must include nexus/relay/server.py):
 #   docker build -f deploy/Dockerfile.relay -t nexus-relay .
 #   docker run -d -p 9000:9000 -e NEXUS_GRID_KEY=your-shared-secret nexus-relay
 #

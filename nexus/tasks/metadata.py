@@ -1,6 +1,6 @@
 """Task env-var serialization + metadata builders.
 
-Extracted from Phase-1/node_modified.py:
+Extracted from node_modified.py:
 
 * ``parse_task_env`` / ``write_task_env`` — lines 1668-1676
 * ``build_task_metadata`` — lines 2370-2442

@@ -1,6 +1,6 @@
 """Pick the best queued task for a worker asking for work.
 
-Extracted from Phase-1/node_modified.py (lines 2647-2724).
+Extracted from node_modified.py (lines 2647-2724).
 
 This is the scheduler's only *decision* function: given a worker id + the
 current queue + the list of all known workers + per-master concurrency

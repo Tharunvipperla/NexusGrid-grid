@@ -1,6 +1,6 @@
 """Cross-platform recursive process kill, with a second-pass re-scan.
 
-Extracted from Phase-1/node_modified.py (lines 1318-1368, 2076-2101).
+Extracted from node_modified.py (lines 1318-1368, 2076-2101).
 
 ``kill_process_tree`` is the one low-level primitive used by every runtime
 backend (native, docker-shell-wrap) to make sure a task that spawns children

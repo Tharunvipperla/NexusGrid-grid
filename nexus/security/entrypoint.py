@@ -1,6 +1,6 @@
 """Validation for user-supplied entrypoint and setup commands.
 
-Phase-1's :func:`prepare_multiline_command` already :func:`shlex.quote`-s
+the original implementation's :func:`prepare_multiline_command` already :func:`shlex.quote`-s
 unsafe characters and joins multi-line input with ``&&``. That blunts the
 basic cases but leaves a tightening gap for in
 ``maximum`` profile we want a hard allowlist, and in *every* profile we

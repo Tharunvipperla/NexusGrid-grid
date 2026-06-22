@@ -1,6 +1,6 @@
 """``/peer/*`` P2P protocol routes.
 
-Ported from Phase-1/node_modified.py:
+Ported from node_modified.py:
 
 * ``/peer/cache_query`` — lines 6167-6175
 * ``/peer/request_join`` — lines 6235-6287
@@ -503,7 +503,7 @@ async def peer_foreign_storage_capacity(
 async def api_pop_task(worker_id: str = Depends(verify_trusted_peer)) -> Response:
     """Select the best queued task for *worker_id* and return it.
 
-    Behaviour matches Phase-1 exactly:
+    Behaviour matches the original implementation exactly:
     * direct dispatch unless consent mode is enabled on either side;
     * task bundle is a zip containing ``payload.zip`` and optionally
       ``checkpoint.zip``, signed per-peer with the shared signing key.

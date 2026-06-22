@@ -1,6 +1,6 @@
 """Peer presence tracking and stale-peer sweeper.
 
-Extracted from Phase-1/node_modified.py:
+Extracted from node_modified.py:
 
 * presence dict ops — lines 541-607 (``mark_peer_online``, ``mark_peer_offline``,
   ``is_peer_offline``, ``_log_presence_event``, ``_write_presence_event``).
@@ -70,7 +70,7 @@ def mark_peer_offline(ip: str, source: str = "ws") -> None:
         log_presence_event(ip, "offline", source)
 
 
-# Back-compat short names used throughout Phase-1 (``presence.touch``, etc.).
+# Back-compat short names used throughout the original implementation (``presence.touch``, etc.).
 touch = mark_peer_online
 mark_offline = mark_peer_offline
 
@@ -106,7 +106,7 @@ def log_presence_event(peer_ip: str, status: str, source: str) -> None:
     """Schedule a ``PresenceEvent`` insert without blocking the caller.
 
     Silently skipped when no event loop is running (early startup). This
-    differs from Phase-1 only in that we check loop presence *before*
+    differs from the original implementation only in that we check loop presence *before*
     creating the coroutine so Python doesn't warn about an un-awaited
     object — the observable behaviour is identical.
     """

@@ -1,6 +1,6 @@
 """Task manifest (``task.json`` inside the zip payload) with a small cache.
 
-Extracted from Phase-1/node_modified.py (lines 2528-2552).
+Extracted from node_modified.py (lines 2528-2552).
 
 The manifest tells the scheduler + runtime which Docker image to use, the
 RAM/CPU limits, whether the task needs network access, etc. Parsing a zip

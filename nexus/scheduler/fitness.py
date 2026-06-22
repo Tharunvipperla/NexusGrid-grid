@@ -1,6 +1,6 @@
 """Worker fitness scoring + support predicate.
 
-Extracted from Phase-1/node_modified.py:
+Extracted from node_modified.py:
 
 * ``worker_supports_task`` — lines 2555-2598
 * ``worker_fit_score`` — lines 2601-2644

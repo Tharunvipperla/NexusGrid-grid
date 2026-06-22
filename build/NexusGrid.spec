@@ -1,18 +1,17 @@
 # -*- mode: python ; coding: utf-8 -*-
-# PyInstaller spec for Phase-2. Builds a single-file NexusGrid.exe that bundles
+# PyInstaller spec. Builds a single-file NexusGrid binary that bundles
 # the entire `nexus` package plus the served UI assets.
 #
-# Always run from the Phase-2 root so the relative paths below
+# Always run from the repository root so the relative paths below
 # (`nexus/__main__.py`, the data files) resolve correctly:
 #
-#     cd Phase-2
 #     pyinstaller --clean --noconfirm build/NexusGrid.spec
 
 import os
 
 from PyInstaller.utils.hooks import collect_submodules
 
-# Spec lives in Phase-2/build/; the source root is its parent. PyInstaller
+# Spec lives in build/; the source root is its parent. PyInstaller
 # resolves relative paths against the spec's directory, so anchor everything
 # on PROJECT_ROOT to keep the spec runnable from any CWD.
 PROJECT_ROOT = os.path.abspath(os.path.join(os.path.dirname(SPEC), '..'))

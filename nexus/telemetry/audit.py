@@ -1,6 +1,6 @@
 """Append-only audit log.
 
-Extracted from Phase-1/node_modified.py (lines 1875-1894).
+Extracted from node_modified.py (lines 1875-1894).
 
 Every significant event the node takes or observes is persisted as an
 ``AuditEvent`` row. Rows are never updated or deleted except by the
@@ -10,7 +10,7 @@ Action vocabulary
 -----------------
 
 Kept deliberately open: any string that a reviewer would recognise is fine.
-Existing Phase-1 actions include ``task.dispatched``, ``task.completed``,
+Existing the original implementation actions include ``task.dispatched``, ``task.completed``,
 ``task.disrupted``, ``peer.joined``, ``peer.revoked``, ``settings.changed``.
 When adding a new action, use dotted ``domain.verb`` form and document it
 in the PR that introduces it.
@@ -106,7 +106,7 @@ async def record_audit_event(
         _log.debug("record_audit_event failed for %s", action, exc_info=True)
 
 
-# Phase-1 spelling. Kept as an alias so ported handlers read 1:1 against the
+# the original implementation spelling. Kept as an alias so ported handlers read 1:1 against the
 # monolith during the transition; new code should prefer ``record_audit_event``.
 write_audit_event = record_audit_event
 

@@ -4,7 +4,7 @@ The automated test suite (pytest). It's the source-of-truth regression net —
 every change ships with a test here.
 
 ```bash
-cd Phase-2
+# from the repository root
 pip install -e .[test]     # pytest + hypothesis (+ pip-audit, bandit)
 python -m pytest -q        # run everything (~1360 tests)
 python -m pytest tests/test_backup.py -q   # one file

@@ -1,6 +1,6 @@
 """Peer + UI WebSocket endpoints.
 
-Ported from Phase-1/node_modified.py:
+Ported from node_modified.py:
 
 * ``/peer/ws`` (``websocket_endpoint``) — lines 6680-6762.
   Master-side worker connection: token-authenticated, receives
@@ -56,7 +56,7 @@ async def websocket_endpoint(websocket: WebSocket) -> None:
     req_token = websocket.headers.get("X-Cluster-Key")
     announced_address = websocket.headers.get("X-Node-Address")
 
-    # Always require token auth — no loopback bypass (Phase-1 line 6685).
+    # Always require token auth — no loopback bypass.
     # Reject missing/empty token up-front: `Peer.my_auth_token == None`
     # compiles to `IS NULL` and would otherwise match rows seeded without an
     # explicit token.
@@ -204,7 +204,7 @@ async def websocket_endpoint(websocket: WebSocket) -> None:
 async def ui_websocket_endpoint(websocket: WebSocket) -> None:
     """Browser-facing live-update WebSocket.
 
-    Gates (Phase-1 parity):
+    Gates (the original implementation parity):
     * caller host must be loopback/private unless ``NEXUS_ALLOW_REMOTE_UI``;
     * ``?token=<LOCAL_API_TOKEN>`` must match constant-time.
     """

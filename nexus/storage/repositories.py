@@ -5,7 +5,7 @@ caller belongs here instead, so subpackages never reach into
 :mod:`nexus.storage.models` directly. Keeps query shapes consistent and makes
 future schema changes a one-file search.
 
-Extracted from Phase-1/node_modified.py:
+Extracted from node_modified.py:
 
 * ``load_local_settings_from_db`` / ``save_local_settings_to_db``
   — lines 1837-1872
@@ -135,7 +135,7 @@ async def seed_identity_mappings() -> None:
     """Re-populate ``core.identity`` with UUID↔IP pairs stored in the DB.
 
     Called on startup so peers keyed by UUID are resolvable before any beacon
-    arrives. Mirrors Phase-1 lines 6034-6038.
+    arrives. Mirrors the original implementation lines 6034-6038.
     """
     for peer in await list_peers():
         if str(peer.ip).startswith("nexus_") and peer.resolved_ip:

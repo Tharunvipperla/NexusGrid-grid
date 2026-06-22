@@ -1,6 +1,6 @@
 """Per-task rolling log buffers.
 
-Extracted from Phase-1/node_modified.py (lines 482-484, 2104-2175).
+Extracted from node_modified.py (lines 482-484, 2104-2175).
 
 Each running task gets an in-memory ``deque`` capped at
 :data:`nexus.core.constants.MAX_LOG_LINES` lines. The UI tails the buffer
@@ -9,7 +9,7 @@ lines since its last poll. Buffers are dropped 30 s after the task's result
 is submitted (see :func:`clear_local_task_log`) so idle RAM doesn't grow
 unbounded in long-lived masters.
 
-:class:`LogStream` preserves the Phase-1 ``elastic_log += "..."`` pattern so
+:class:`LogStream` preserves the the original implementation ``elastic_log += "..."`` pattern so
 callers don't have to rewrite their string concatenations when they adopt
 structured logging later.
 """

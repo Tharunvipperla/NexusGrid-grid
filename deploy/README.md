@@ -10,7 +10,7 @@ go here.
 | `Dockerfile.relay` | Standalone relay-server image. |
 | `docker-compose.relay.yml` | One-command relay deployment. |
 
-## Building (run from the `Phase-2` root)
+## Building (run from the repository root)
 The relay image needs `nexus/relay/server.py` (the bundled relay source). That's
 why the **build context is the repo root**, not this folder:
 

@@ -1,6 +1,6 @@
 """String sanitization, masking, and multi-line command helpers.
 
-Extracted from Phase-1/node_modified.py (lines 771–788, 932–977).
+Extracted from node_modified.py (lines 771–788, 932–977).
 """
 
 from __future__ import annotations

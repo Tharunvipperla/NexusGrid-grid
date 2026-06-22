@@ -1,6 +1,6 @@
 """Per-task workspace directory + P2P cache resolution.
 
-Extracted from Phase-1/node_modified.py:
+Extracted from node_modified.py:
 
 * ``resolve_p2p_cache`` — lines 2765-2811
 
@@ -11,7 +11,7 @@ download a dataset over LAN before falling back to the master.
 
 If the task manifest specifies ``cloud_uri``, ``resolve_p2p_cache`` returns
 a local path to the cached bundle. When no peer has it yet, a mock placeholder
-is written so the task-setup code can continue (Phase-1 behaviour).
+is written so the task-setup code can continue (the original implementation behaviour).
 """
 
 from __future__ import annotations
@@ -43,7 +43,7 @@ async def resolve_p2p_cache(
     Resolution order:
     1. Already-downloaded file under :func:`nexus.core.cache_dir`.
     2. Trusted peer's ``/peer/cache_query?uri_hash=...`` endpoint.
-    3. Fallback placeholder (Phase-1 mock).
+    3. Fallback placeholder (the original implementation mock).
     """
     if not cloud_uri:
         return ""
@@ -80,7 +80,7 @@ async def resolve_p2p_cache(
             # Call ``get_node_identity()`` at request time rather than using a
             # stale ``NODE_UUID`` binding: ``from … import NODE_UUID`` copies
             # the empty value at module load, so later reassignments inside
-            # ``get_or_create_node_uuid`` never propagate here. Phase-1 sent
+            # ``get_or_create_node_uuid`` never propagate here. the original implementation sent
             # ``<ip>:<port>`` on this header — preserve that.
             cache_headers = {
                 "X-Cluster-Key": str(peer.their_auth_token),

@@ -1,6 +1,6 @@
 """Background loop that re-queues retrying tasks once their backoff elapses.
 
-Extracted from Phase-1/node_modified.py (lines 5769-5797).
+Extracted from node_modified.py (lines 5769-5797).
 
 The retry loop polls tasks in the ``retrying`` state and, for each one
 whose ``NEXUS_META_NEXT_RETRY_AT`` has passed, transitions it back to

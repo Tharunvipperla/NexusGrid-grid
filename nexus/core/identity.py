@@ -1,6 +1,6 @@
 """Node identity: UUID, display name, and IP↔UUID resolution.
 
-Extracted from Phase-1/node_modified.py:
+Extracted from node_modified.py:
 
 * display-name generator — lines 791-805
 * node UUID lifecycle — lines 808-819
@@ -80,9 +80,9 @@ def set_node_port(port: int) -> None:
 
 
 def get_node_identity() -> str:
-    """Return ``<local_ip>:<port>`` — the Phase-1 node identity string.
+    """Return ``<local_ip>:<port>`` — the the original implementation node identity string.
 
-    Ported from Phase-1/node_modified.py:684-685.
+    Ported from node_modified.py:684-685.
     """
     # Local import: ``nexus.utils`` imports ``nexus.core`` indirectly.
     from nexus.utils.net import get_local_ip
@@ -102,7 +102,7 @@ def get_or_create_node_uuid(settings: dict | None = None) -> str:
     ----------
     settings
         The live ``LOCAL_SETTINGS`` dict. When omitted (the common call
-        form used by Phase-1 code) it is resolved lazily via
+        form used by the original implementation code) it is resolved lazily via
         :mod:`nexus.core.config` to avoid an import cycle at module load.
     """
     global NODE_UUID
@@ -198,7 +198,7 @@ def clear_mappings() -> None:
 def fmt_peer(identifier: str) -> str:
     """Return a human-friendly label for any peer identifier.
 
-    Ported from Phase-1/node_modified.py (lines 846-867). Prefers
+    Ported from node_modified.py (lines 846-867). Prefers
     ``display_name#<4hex>`` from live heartbeats or LAN beacons, falls
     back to ``ip:port``, and only shows the raw ``nexus_<uuid>`` when
     nothing else is known.

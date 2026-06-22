@@ -1,6 +1,6 @@
 """Local-host network helpers.
 
-Extracted from Phase-1/node_modified.py (lines 673–692, 749–768).
+Extracted from node_modified.py (lines 673–692, 749–768).
 """
 
 from __future__ import annotations

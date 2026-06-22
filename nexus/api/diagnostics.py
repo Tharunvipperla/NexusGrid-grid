@@ -1,6 +1,6 @@
 """Minimal health / diagnostics router.
 
-Extracted from Phase-1/node_modified.py:
+Extracted from node_modified.py:
 
 * ``/health`` — line 8527
 * ``/local/shutdown`` (graceful shutdown) — lines 8533-8546

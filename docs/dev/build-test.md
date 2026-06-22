@@ -5,7 +5,7 @@
 ## Running for development
 
 ```bash
-cd Phase-2
+# from the repository root
 pip install -e .[test]          # runtime deps + test tooling (pytest, hypothesis, pip-audit, bandit)
 python -m nexus                 # start a node (UI auto-opens)
 python -m nexus --port 8001 --host 127.0.0.1 --no-browser   # a second, loopback-only node
@@ -36,7 +36,7 @@ The node serves it from disk with the local token injected.
 ## Tests
 
 ```bash
-cd Phase-2
+# from the repository root
 python -m pytest -q                       # full suite (~1360 tests)
 python -m pytest tests/test_backup.py -q  # one file
 ```

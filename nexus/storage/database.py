@@ -1,6 +1,6 @@
 """Async SQLAlchemy engine, session factory, and migrations.
 
-Extracted from Phase-1/node_modified.py:
+Extracted from node_modified.py:
 
 * engine creation — lines 258-262
 * table + column migration — lines 6009-6024
@@ -38,7 +38,7 @@ _current_db_url: str = ""
 
 
 def _default_url_for_port(port: int) -> str:
-    """Return the default SQLite URL used by Phase-1 for a given port."""
+    """Return the default SQLite URL used by the original implementation for a given port."""
     return f"sqlite+aiosqlite:///{(BASE_DIR / f'nexus_mod_{int(port)}.db').as_posix()}"
 
 

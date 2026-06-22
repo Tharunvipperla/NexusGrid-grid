@@ -1,6 +1,6 @@
 @echo off
-REM Windows build script for Phase-2. Produces dist\NexusGrid.exe via PyInstaller.
-REM Run from the Phase-2 root or let the script cd there itself.
+REM Windows build script. Produces dist\NexusGrid.exe via PyInstaller.
+REM Run from the repository root or let the script cd there itself.
 
 setlocal
 cd /d "%~dp0\.."

@@ -1,6 +1,6 @@
 """Timestamp and duration helpers.
 
-Extracted from Phase-1/node_modified.py (lines 669, 928).
+Extracted from node_modified.py (lines 669, 928).
 """
 
 from __future__ import annotations

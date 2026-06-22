@@ -1,6 +1,6 @@
 """Shadow task records for cross-peer coordination.
 
-Extracted from Phase-1/node_modified.py (``upsert_remote_shadow_task`` at
+Extracted from node_modified.py (``upsert_remote_shadow_task`` at
 lines 2487-2525).
 
 When this node serves a task on behalf of a remote master we keep a local

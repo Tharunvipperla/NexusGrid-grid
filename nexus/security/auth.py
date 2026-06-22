@@ -1,6 +1,6 @@
 """FastAPI auth dependencies for local management and peer endpoints.
 
-Extracted from Phase-1/node_modified.py (lines 1616-1663).
+Extracted from node_modified.py (lines 1616-1663).
 
 Two layers of authentication:
 

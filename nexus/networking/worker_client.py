@@ -1,6 +1,6 @@
 """Long-lived Worker→Master WebSocket loop + relay fallback + supervisor.
 
-Ported from Phase-1/node_modified.py:
+Ported from node_modified.py:
 
 * ``worker_client_process`` — lines 3791-4382 (direct WS mode)
 * ``_relay_worker_loop`` — lines 4384-4818 (relay-tunnel fallback)

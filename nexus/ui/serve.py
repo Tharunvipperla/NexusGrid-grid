@@ -1,10 +1,10 @@
 """Serve ``index.html`` at ``/`` with local-token injection and CSP headers.
 
-Extracted from Phase-1/node_modified.py (``serve_ui`` at lines 7297-7324).
+Extracted from node_modified.py (``serve_ui`` at lines 7297-7324).
 
 The served HTML embeds the local API token in a ``<meta>`` tag so the
 frontend can authenticate its own fetch calls. A Content-Security-Policy
-header locks script/style sources to ``self`` plus the two CDNs Phase-1
+header locks script/style sources to ``self`` plus the two CDNs the original implementation
 already trusts.
 """
 

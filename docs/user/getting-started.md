@@ -26,8 +26,8 @@ ports, for testing).
 
 ### Install
 ```bash
-git clone <your-fork-or-release-url> nexusgrid
-cd nexusgrid/Phase-2
+git clone https://github.com/Tharunvipperla/NexusGrid-grid nexusgrid
+cd nexusgrid
 pip install -r requirements.txt
 ```
 

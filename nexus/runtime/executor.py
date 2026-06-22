@@ -1,6 +1,6 @@
 """Top-level execution dispatcher.
 
-Ported from Phase-1/node_modified.py (``execute_bundle_with_watchdog`` at
+Ported from node_modified.py (``execute_bundle_with_watchdog`` at
 lines 2817-3785, ~970 LOC). One coroutine that:
 
 1. Parses ``task.json`` out of the workspace dir.
@@ -10,9 +10,6 @@ lines 2817-3785, ~970 LOC). One coroutine that:
 5. Enforces a watchdog loop: interrupt/preempt/OOM check, RAM clamp updates,
    child-process snapshots for the UI.
 6. Archives the workspace and returns ``(status_meta, archive_path)``.
-
-Every Phase-1 helper is routed through its Phase-2 home — no behaviour
-change, same log shape, same exit semantics.
 """
 
 from __future__ import annotations

@@ -1,6 +1,6 @@
 """Task status transitions, timeline events, retry, preemption.
 
-Extracted from Phase-1/node_modified.py:
+Extracted from node_modified.py:
 
 * ``add_task_timeline_event`` — lines 1679-1686
 * ``set_task_status`` — lines 1689-1720

@@ -1,6 +1,6 @@
 """``/local/*`` management routes (peer + task + settings).
 
-Ported from Phase-1/node_modified.py:
+Ported from node_modified.py:
 
 * ``/local/request_peer`` — lines 6178-6232
 * ``/local/manage_peer`` — lines 6290-6421
@@ -2599,7 +2599,7 @@ async def preempt_local_worker_task(task_id: str) -> dict:
     # Use ``preempt_running_task`` (flag + synchronous container.stop /
     # kill_process_tree) rather than ``mark_task_preempted`` (flag only).
     # The handler's response message claims container presence, which only
-    # the combined helper can honour. It also restores Phase-1's synchronous
+    # the combined helper can honour. It also restores the original implementation's synchronous
     # teardown — the flag-only path deferred the stop to the executor
     # watchdog's ~2 s poll tick.
     from nexus.runtime.worker_state import preempt_running_task

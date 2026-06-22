@@ -1,6 +1,6 @@
 """Persistent secret files for HMAC signing and local-API auth.
 
-Extracted from Phase-1/node_modified.py (lines 126-162).
+Extracted from node_modified.py (lines 126-162).
 
 Two tokens live on disk next to :data:`nexus.core.BASE_DIR`:
 
@@ -42,7 +42,7 @@ def _read_or_create(path: Path, *, allow_env: str | None = None) -> str:
     """Return the token stored at *path*, creating a fresh one if missing.
 
     If *allow_env* names an environment variable and that variable is set,
-    the env value wins and the file is not touched. This matches the Phase-1
+    the env value wins and the file is not touched. This matches the the original implementation
     behaviour for ``NEXUS_SIGNING_SECRET``.
     """
     if allow_env:

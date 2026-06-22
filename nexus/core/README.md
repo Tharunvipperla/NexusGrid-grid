@@ -10,7 +10,7 @@ Everything every other subpackage needs access to that is *not* purely stdlib:
 - Path resolution that has to be PyInstaller-safe (`BASE_DIR`, `CACHE_DIR`).
 - The **shared state registry** — the authoritative home for the long-lived
   in-memory structures that used to be top-level globals in
-  `Phase-1/node_modified.py` (worker maps, presence tables, task queues).
+  `node_modified.py` (worker maps, presence tables, task queues).
 - A lightweight in-process **event bus** so subpackages can emit and observe
   cross-cutting signals without importing each other directly.
 

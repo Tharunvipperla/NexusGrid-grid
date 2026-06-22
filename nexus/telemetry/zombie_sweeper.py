@@ -1,6 +1,6 @@
 """Dead-worker sweep + lease-expired task recovery.
 
-Ported from Phase-1/node_modified.py (``zombie_sweeper`` at lines
+Ported from node_modified.py (``zombie_sweeper`` at lines
 5921-6001).
 
 Every 5 seconds:

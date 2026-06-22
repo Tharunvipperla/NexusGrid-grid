@@ -1,6 +1,6 @@
 """HMAC signing primitives for peer-to-peer integrity.
 
-Extracted from Phase-1/node_modified.py (lines 1571-1613).
+Extracted from node_modified.py (lines 1571-1613).
 
 Every peer payload (task bundle, result, bye frame) carries a hex HMAC-SHA256
 signature over ``purpose|task_id|extra|sha256(payload)``. Both sides must
@@ -14,7 +14,7 @@ Keys
   :mod:`nexus.security.tokens`.
 * For per-peer signing (negotiated during the join handshake) callers pass
   an explicit ``key=...`` argument. See
-  ``Phase-1/node_modified.py:sign_bytes`` callers for examples.
+  ``node_modified.py:sign_bytes`` callers for examples.
 """
 
 from __future__ import annotations

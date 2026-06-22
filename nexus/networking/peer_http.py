@@ -1,6 +1,6 @@
 """Direct-HTTP peer request with relay fallback.
 
-Ported from Phase-1/node_modified.py (``_peer_http_post`` at lines 5659-5683).
+Ported from node_modified.py (``_peer_http_post`` at lines 5659-5683).
 
 Attempts a direct POST to ``https://<resolved_ip><path>`` first (TLS by
 default since Step 6). The peer cert's SHA-256 fingerprint is

@@ -1,6 +1,6 @@
 """SQLAlchemy ORM models.
 
-Extracted from Phase-1/node_modified.py (lines 204-256).
+Extracted from node_modified.py (lines 204-256).
 
 The schema intentionally stays flat and denormalized:
 

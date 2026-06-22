@@ -1,6 +1,6 @@
 """Per-node local worker bookkeeping.
 
-Extracted from Phase-1/node_modified.py:
+Extracted from node_modified.py:
 
 * ``LOCAL_WORKER_STATE`` dict — lines 473-479
 * ``get_local_worker_snapshot`` — lines 2007-2034

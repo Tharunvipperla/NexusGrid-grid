@@ -1,6 +1,6 @@
 """Periodic UDP beacon broadcaster + stale-peer sweeper.
 
-Extracted from Phase-1/node_modified.py (lines 4853-4897).
+Extracted from node_modified.py (lines 4853-4897).
 
 This module sends the *outbound* half of discovery: it pushes a beacon
 describing this node (UUID, display name, live CPU/RAM/GPU stats) every

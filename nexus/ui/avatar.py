@@ -1,11 +1,11 @@
 """Avatar upload and serve endpoints.
 
-Extracted from Phase-1/node_modified.py:
+Extracted from node_modified.py:
 
 * ``upload_avatar`` — lines 8549-8558
 * ``get_avatar`` — lines 8561-8567
 
-Security posture matches Phase-1: 2MB cap, PNG/JPEG magic-byte check,
+Security posture matches the original implementation: 2MB cap, PNG/JPEG magic-byte check,
 ``0o600`` permissions on the saved file. The avatar lives inside the
 per-port cache directory so multiple nodes on one host don't stomp on
 each other.
@@ -45,7 +45,7 @@ async def upload_avatar(file: UploadFile = File(...)) -> dict:
         raise HTTPException(400, detail="Avatar file too large (max 2MB).")
     if not (content.startswith(_PNG_MAGIC) or content.startswith(_JPEG_MAGIC)):
         raise HTTPException(400, detail="Avatar must be PNG or JPEG.")
-    # In Phase-2 the port is derived from CLI args; fall back to the default
+    # The port is derived from CLI args at runtime; fall back to the default
     # so unit tests hitting a factory-built app don't need to pass a port.
     from nexus.core.constants import DEFAULT_HTTP_PORT
 

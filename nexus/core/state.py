@@ -1,6 +1,6 @@
 """Shared in-memory state registry.
 
-In Phase-1 this state lived as a constellation of top-level globals in
+In the original implementation this state lived as a constellation of top-level globals in
 ``node_modified.py`` (``ACTIVE_WORKERS``, ``INBOUND_PEER_WS``, ``TASK_QUEUE``,
 ``PEER_PRESENCE``, ``METRICS``, …). Moving them under a single namespace
 does two things:

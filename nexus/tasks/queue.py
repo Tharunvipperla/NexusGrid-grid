@@ -1,6 +1,6 @@
 """Task queue helpers around :data:`nexus.core.STATE.task_queue`.
 
-Extracted from Phase-1/node_modified.py (line 464 + every ``TASK_QUEUE.put``
+Extracted from node_modified.py (line 464 + every ``TASK_QUEUE.put``
 call site: 5640, 5743, 5761, 5787, 6066, 7256, 7355, 8188).
 
 The queue itself is a plain :class:`asyncio.Queue` of task-id strings. This

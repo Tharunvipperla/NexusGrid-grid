@@ -1,8 +1,7 @@
 """Content and object hashing helpers.
 
-Phase-2 addition: these primitives are implicit in Phase-1 (SHA-256 calls are
-inlined throughout). Centralizing them here means cache-key derivation stays
-consistent across runtimes and caches.
+Centralizing these primitives here means cache-key derivation stays consistent
+across runtimes and caches, rather than inlining SHA-256 calls throughout.
 """
 
 from __future__ import annotations

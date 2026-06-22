@@ -35,7 +35,7 @@ from nexus.networking.worker_client import (
 async def get_connected_master_peers() -> list[str]:
     """Return the sorted list of trusted masters (+ dual-role peers).
 
-    Ported from Phase-1/node_modified.py (lines 1900-1913). Queries the
+    Ported from node_modified.py (lines 1900-1913). Queries the
     ``peers`` table for every peer with ``status='trusted'`` whose role
     is ``master`` or ``dual``.
     """

@@ -1,6 +1,6 @@
 """Constants that are never user-configurable.
 
-Extracted from Phase-1/node_modified.py (lines 167-199).
+Extracted from node_modified.py (lines 167-199).
 
 A constant belongs here if and only if:
 

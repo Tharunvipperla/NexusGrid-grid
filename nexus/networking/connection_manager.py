@@ -1,6 +1,6 @@
 """Shared WebSocket connection registry (master-side).
 
-Extracted from Phase-1/node_modified.py (lines 610-647).
+Extracted from node_modified.py (lines 610-647).
 
 The master keeps a dict of active worker WebSockets keyed by worker IP /
 UUID. This manager centralizes the accept, disconnect, and broadcast

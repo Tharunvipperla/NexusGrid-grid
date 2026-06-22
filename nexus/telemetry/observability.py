@@ -1,6 +1,6 @@
 """Periodic queue / metric / alert / retention sampling loop.
 
-Ported from Phase-1/node_modified.py (``observability_loop`` at lines
+Ported from node_modified.py (``observability_loop`` at lines
 5800-5918).
 
 Runs every 5 seconds. Each tick:

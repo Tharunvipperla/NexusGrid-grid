@@ -1,6 +1,6 @@
 """Live node settings: defaults, normalization, load/save hooks.
 
-Extracted from Phase-1/node_modified.py:
+Extracted from node_modified.py:
 
 * ``DEFAULT_LOCAL_SETTINGS`` — lines 62-98
 * ``normalize_bool`` / ``normalize_list_field`` / ``normalize_local_settings``

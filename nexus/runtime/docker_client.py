@@ -1,6 +1,6 @@
 """Lazy Docker SDK client + per-profile container security options.
 
-Extracted from Phase-1/node_modified.py:
+Extracted from node_modified.py:
 
 * Docker module import + ``_docker_client`` singleton — lines 4-6, 267-286
 * ``_get_docker_security_opts`` — lines 1458-1475

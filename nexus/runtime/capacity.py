@@ -1,6 +1,6 @@
 """Dispatch-capacity + allowed-image gate + required-capability helpers.
 
-Extracted from Phase-1/node_modified.py:
+Extracted from node_modified.py:
 
 * ``get_dispatch_capacity_mb`` — lines 2268-2273
 * ``can_pull_more_tasks`` / ``can_pull_task_from_master`` — lines 2276-2297

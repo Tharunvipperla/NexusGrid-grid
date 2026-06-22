@@ -1,6 +1,6 @@
 """Resolve workflow dependencies and release ready tasks into the queue.
 
-Extracted from Phase-1/node_modified.py (lines 5727-5766).
+Extracted from node_modified.py (lines 5727-5766).
 
 A task in the ``waiting`` state declares its prerequisites in
 ``TaskRecord.depends_on`` (comma-separated task ids). This loop polls

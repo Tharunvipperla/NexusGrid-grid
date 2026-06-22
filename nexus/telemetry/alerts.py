@@ -1,9 +1,9 @@
 """Alert ring buffer.
 
-Extracted from Phase-1/node_modified.py (line 495, 1562-1565).
+Extracted from node_modified.py (line 495, 1562-1565).
 
 Alerts are short structured messages the UI renders in the Diagnostics tab.
-They are *observations*, not user notifications — the Phase-1 UI only shows
+They are *observations*, not user notifications — the the original implementation UI only shows
 the 200 most recent. The ring buffer lives in
 :data:`nexus.core.STATE.alerts` so the UI broadcaster can read it without
 importing this module.

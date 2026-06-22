@@ -1,6 +1,6 @@
 """Live UI WebSocket broadcaster.
 
-Extracted from Phase-1/node_modified.py (lines 8460-8490).
+Extracted from node_modified.py (lines 8460-8490).
 
 The broadcaster keeps a list of connected UI-side WebSockets and fans out
 state deltas. Non-UI packages publish ``"state_changed"`` etc. on the
@@ -41,7 +41,7 @@ async def broadcast_ui_update(payload: dict) -> None:
 
     Sockets that fail to accept the message are dropped from the list.
     A ``state_changed`` event also invalidates the ``/local/network``
-    cache so the next poll rebuilds fresh — matching Phase-1 line 8484.
+    cache so the next poll rebuilds fresh.
     """
     if payload.get("type") == "state_changed":
         # Local import: avoid the ui → api dependency at module load.

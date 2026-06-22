@@ -1,11 +1,11 @@
 """Outbound WebSocket helper with websockets-library version tolerance.
 
-Extracted from Phase-1/node_modified.py (``open_worker_websocket`` at
+Extracted from node_modified.py (``open_worker_websocket`` at
 lines 654-666).
 
 The ``websockets`` library renamed the per-connection extra-headers keyword
 from ``extra_headers`` to ``additional_headers`` between majors. Rather than
-pin a single version, Phase-1 tries both and falls through the
+pin a single version, the original implementation tries both and falls through the
 ``TypeError`` path. This helper preserves that dance so the worker-client
 and relay-client loops can stay on whichever version a given deployment
 has installed.

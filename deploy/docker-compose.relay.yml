@@ -2,8 +2,8 @@
 #
 #   NEXUS_GRID_KEY=your-shared-secret docker compose -f deploy/docker-compose.relay.yml up -d
 #
-# Run from the Phase-2 root. The build context is the repo root (..) because the
-# image needs relay_server_modified.py, which lives there.
+# Run from the repository root. The build context is the repo root (..) because
+# the image needs nexus/relay/server.py, which lives there.
 # Every node that should reach this relay must be configured with the
 # same NEXUS_GRID_KEY. See docs/guides/relay-deploy.md for the full guide.
 services:

@@ -24,7 +24,7 @@ The relay only ever sees opaque, AEAD-encrypted frames (see
 
 ## Option A — Docker (recommended)
 
-Run these from the `Phase-2` root (the build context must include
+Run these from the repository root (the build context must include
 `nexus/relay/server.py`):
 
 ```sh
@@ -41,7 +41,7 @@ docker run -d -p 9000:9000 -e NEXUS_GRID_KEY=your-shared-secret nexus-relay
 
 ```sh
 pip install "fastapi>=0.110" "uvicorn[standard]>=0.29"
-# from the Phase-2 root:
+# from the repository root:
 NEXUS_GRID_KEY=your-shared-secret PORT=9000 python nexus/relay/server.py
 ```
 

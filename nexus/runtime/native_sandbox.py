@@ -1,6 +1,6 @@
 """Cross-platform sandbox primitives for the native runtime.
 
-Phase-1's native runtime relied on ``resource.setrlimit`` (Linux only) plus
+the original implementation's native runtime relied on ``resource.setrlimit`` (Linux only) plus
 ``start_new_session`` for kill-on-parent-exit. layers two
 stronger primitives on top:
 

@@ -1,6 +1,6 @@
 """Pre-execution regex scan for known-bad patterns in user workspaces.
 
-Extracted from Phase-1/node_modified.py (lines 1371-1455) and hardened in
+Extracted from node_modified.py (lines 1371-1455) and hardened in
 with three additions:
 
 1. **Profile-aware reads.** Risky text extensions (``.py``, ``.sh``,

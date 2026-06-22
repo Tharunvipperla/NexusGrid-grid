@@ -1,6 +1,6 @@
 """CPU / RAM / GPU / network sampling.
 
-Extracted from Phase-1/node_modified.py (lines 289-354, plus GPU query
+Extracted from node_modified.py (lines 289-354, plus GPU query
 helpers at 357-…). Kept narrow for Step 5: only the pieces that everything
 upstream of runtime needs (bandwidth, GPU detection). Runtime-specific GPU
 scheduling queries stay in ``runtime/`` where they belong.
@@ -185,7 +185,7 @@ def get_gpu_stats() -> dict:
 def sample_net_bandwidth() -> NetIoRate:
     """Return bytes/sec (sent+recv) since the previous call.
 
-    First call seeds the baseline and returns zeros — that's the Phase-1
+    First call seeds the baseline and returns zeros — that's the the original implementation
     behaviour callers already expect.
     """
     try:

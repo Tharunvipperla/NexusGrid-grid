@@ -1,9 +1,9 @@
 """Backward-compatibility shim for the old ``node_modified`` monolith.
 
-Phase-2 is the canonical codebase; this file exists only so legacy imports
-written against Phase-1's ``node_modified`` module keep resolving. Every
-symbol re-exported below has a new canonical home under :mod:`nexus`; new
-code should import from there, not from here.
+The package under :mod:`nexus` is the canonical codebase; this file exists only
+so older imports written against the original ``node_modified`` module keep
+resolving. Every symbol re-exported below has a canonical home under
+:mod:`nexus`; new code should import from there, not from here.
 
 Submodule map:
 
@@ -265,7 +265,7 @@ from nexus.ui import broadcast_ui_update, mount_ui  # noqa: F401
 from nexus.app import create_app  # noqa: F401
 
 
-# Phase-1 underscore aliases kept for callers that hard-code the private name.
+# Underscore aliases kept for callers that hard-code the private name.
 _get_docker_security_opts = docker_security_opts
 
 
