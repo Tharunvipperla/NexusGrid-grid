@@ -4,6 +4,11 @@ User-facing release notes. The in-app **What's new** panel (notification bell)
 reads this file via `/local/whats_new`. Newest version first; one `## [version] - date`
 header per release, then `-` bullets for the highlights people actually notice.
 
+## [1.1.0] - 2026-06-22
+- **macOS & Linux builds** — NexusGrid now ships native binaries for macOS and
+  Linux alongside Windows. Auto-update downloads the build for your own OS; the
+  signed release manifest carries a per-platform binary map.
+
 ## [1.0.0] - 2026-06-21
 First public release. NexusGrid is a peer-to-peer compute and storage grid — pool
 compute and storage across machines you and people you trust own, with no central
