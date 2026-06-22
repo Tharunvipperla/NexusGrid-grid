@@ -137,3 +137,36 @@ def test_container_argv_adds_gpus_count():
 
 def test_container_argv_no_gpus_when_unset():
     assert "--gpus" not in _container_argv("docker", _ctx(None))
+
+
+# --- host GPU count (drives the Services toggle vs slider) -----------------
+
+import types
+
+
+def test_gpu_count_zero_without_gpu(monkeypatch):
+    import nexus.telemetry.hardware as hw
+    monkeypatch.setattr(hw, "_gpu_count", None)
+    monkeypatch.setattr(hw, "detect_gpu", lambda: False)
+    assert hw.gpu_count() == 0
+
+
+def test_gpu_count_counts_nvidia_devices(monkeypatch):
+    import nexus.telemetry.hardware as hw
+    monkeypatch.setattr(hw, "_gpu_count", None)
+    monkeypatch.setattr(hw, "_gpu_vendor", "nvidia")
+    monkeypatch.setattr(hw, "detect_gpu", lambda: True)
+    fake = types.SimpleNamespace(returncode=0, stdout="GPU 0: A\nGPU 1: B\n")
+    monkeypatch.setattr(hw.subprocess, "run", lambda *a, **k: fake)
+    assert hw.gpu_count() == 2
+
+
+def test_gpu_count_falls_back_to_one_on_probe_failure(monkeypatch):
+    import nexus.telemetry.hardware as hw
+    monkeypatch.setattr(hw, "_gpu_count", None)
+    monkeypatch.setattr(hw, "_gpu_vendor", "nvidia")
+    monkeypatch.setattr(hw, "detect_gpu", lambda: True)
+    def boom(*a, **k):
+        raise FileNotFoundError
+    monkeypatch.setattr(hw.subprocess, "run", boom)
+    assert hw.gpu_count() == 1

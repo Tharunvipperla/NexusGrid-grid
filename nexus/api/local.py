@@ -1456,6 +1456,27 @@ async def list_replica_runners() -> dict:
     return {"runners": available_runners()}
 
 
+@router.get(
+    "/gpu_info",
+    dependencies=[Depends(verify_local_auth)],
+    summary="This host's GPU availability + count (for the service GPU control)",
+    tags=["Services"],
+)
+async def local_gpu_info() -> dict:
+    """Whether this host has a GPU, how many, and whether GPU compute is enabled.
+
+    Drives the Services GPU control: a simple on/off when there's one GPU, a
+    count slider when there are several, disabled when there's none.
+    """
+    from nexus.telemetry.hardware import detect_gpu, gpu_count, gpu_vendor
+    return {
+        "available": detect_gpu(),
+        "count": gpu_count(),
+        "vendor": gpu_vendor() or "",
+        "node_gpu_enabled": bool(LOCAL_SETTINGS.get("node_gpu", False)),
+    }
+
+
 @router.post(
     "/peers/{peer_uuid}/services/{service_name}/run",
     dependencies=[Depends(verify_local_auth)],

@@ -32,6 +32,7 @@ class NetIoRate(TypedDict):
 
 _gpu_detected: bool | None = None
 _gpu_vendor: str | None = None
+_gpu_count: int | None = None
 _net_io_last = {"t": 0.0, "sent": 0, "recv": 0}
 _net_io_rate = {"sent_per_sec": 0.0, "recv_per_sec": 0.0}
 
@@ -70,6 +71,41 @@ def gpu_vendor() -> str | None:
     if _gpu_detected is None:
         detect_gpu()
     return _gpu_vendor
+
+
+def gpu_count() -> int:
+    """Return the number of GPUs on this host (0 if none). Cached process-wide.
+
+    NVIDIA: count the ``GPU N:`` lines from ``nvidia-smi -L``. AMD: best-effort
+    line count (v1 is NVIDIA-first). Any probe failure with a GPU present falls
+    back to 1, so a single-GPU host never reports 0 while ``detect_gpu`` is True.
+    """
+    global _gpu_count
+    if _gpu_count is not None:
+        return _gpu_count
+    if not detect_gpu():
+        _gpu_count = 0
+        return 0
+    try:
+        if _gpu_vendor == "nvidia":
+            out = subprocess.run(
+                ["nvidia-smi", "-L"], capture_output=True, text=True, timeout=5
+            )
+            n = sum(
+                1 for ln in out.stdout.splitlines()
+                if ln.strip().lower().startswith("gpu")
+            ) if out.returncode == 0 else 0
+        else:
+            out = subprocess.run(
+                ["rocm-smi", "--showproductname"],
+                capture_output=True, text=True, timeout=5,
+            )
+            n = len([ln for ln in out.stdout.splitlines() if ln.strip()]) \
+                if out.returncode == 0 else 0
+        _gpu_count = max(1, n)
+    except (FileNotFoundError, subprocess.TimeoutExpired, ValueError):
+        _gpu_count = 1
+    return _gpu_count
 
 
 def get_gpu_stats() -> dict:

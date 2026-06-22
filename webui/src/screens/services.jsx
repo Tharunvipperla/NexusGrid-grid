@@ -210,6 +210,21 @@ const ServiceEditor = ({ svc, onSave, onDelete, onCancel }) => {
   const [engineBusy, setEngineBusy] = React.useState("");
   const set = (k) => (e) => setF({ ...f, [k]: e && e.target ? e.target.value : e });
 
+  // GPU control is host-aware: a simple on/off when there's one GPU, a count
+  // slider only when the host actually has several, disabled when there's none.
+  // run_gpu stays a string ("", a count, or "all"); the backend re-validates it
+  // and rejects a GPU request on a host with no GPU. No free text = no junk.
+  const [gpuInfo, setGpuInfo] = React.useState(null);
+  React.useEffect(() => {
+    api.get("/local/gpu_info").then(setGpuInfo)
+       .catch(() => setGpuInfo({ available: false, count: 0 }));
+  }, []);
+  const gpuMax = (gpuInfo && gpuInfo.count) || 1;
+  const gpuOn = !!f.run_gpu;
+  const gpuN = f.run_gpu === "all" ? gpuMax : (parseInt(f.run_gpu, 10) || 1);
+  const setGpuOn = (on) => set("run_gpu")(on ? "all" : "");
+  const setGpuN = (n) => set("run_gpu")(n >= gpuMax ? "all" : String(n));
+
   /* C7: one-click — start a managed local DB engine and auto-fill the engine,
    * service kind, and admin DSN fields below. */
   const startEngine = async (engine) => {
@@ -328,10 +343,30 @@ const ServiceEditor = ({ svc, onSave, onDelete, onCancel }) => {
         <Field label="Ports (CSV)"><input className="input mono" placeholder="11434" value={f.run_ports} onChange={set("run_ports")}/></Field>
         <Field label="Env (CSV, KEY=VAL)" hint="secrets allowed as secret://NAME — resolved at run time, never shared"><input className="input mono" value={f.run_env} onChange={set("run_env")}/></Field>
       </div>
-      <div className="field-row" style={{ marginTop: 12 }}>
-        <Field label="GPU (optional)" hint="blank = none · 'all' = every GPU · or a number. Host must have a GPU and allow it.">
-          <input className="input mono" maxLength={8} placeholder="all" value={f.run_gpu} onChange={set("run_gpu")}/>
-        </Field>
+      <div style={{ marginTop: 12 }}>
+        {!gpuInfo ? (
+          <Field label="GPU"><div className="hint">checking for a GPU…</div></Field>
+        ) : !gpuInfo.available ? (
+          <Field label="GPU" hint="no GPU detected on this host — the service runs on CPU here.">
+            <div className="hint">No GPU available on this machine.</div>
+          </Field>
+        ) : (
+          <Field label="GPU"
+                 hint="give this service the host's GPU (NVIDIA, via --gpus). Sharing isn't throttled — the service gets the full card.">
+            <div className="row" style={{ alignItems: "center", gap: 10 }}>
+              <Chk on={gpuOn} onChange={setGpuOn}/>
+              <span style={{ fontSize: 13 }}>
+                {!gpuOn ? "No GPU"
+                  : gpuInfo.count > 1 ? `Use ${gpuN >= gpuMax ? "all" : gpuN} of ${gpuMax} GPUs`
+                  : "Use the GPU"}
+              </span>
+            </div>
+            {gpuOn && gpuInfo.count > 1 && (
+              <input type="range" min={1} max={gpuMax} step={1} value={gpuN}
+                     onChange={e => setGpuN(+e.target.value)} style={{ width: "100%", marginTop: 8 }}/>
+            )}
+          </Field>
+        )}
       </div>
       <div style={{ marginTop: 12 }}>
         <CodeField label="Custom build — Dockerfile (optional)" language="dockerfile" rows={5}

@@ -449,7 +449,8 @@ const ConfigScreen = ({ online, onPower }) => {
             <Field label={`Max concurrent coordinators — ${f.max_serving_masters}`} hint="when sharing by capacity (1–8)">
               <input type="range" min={1} max={8} step={1} value={f.max_serving_masters} onChange={e => set("max_serving_masters")(+e.target.value)} style={{ width: "100%" }}/>
             </Field>
-            <Field label={`Max GPU usage — ${f.max_gpu_pct}%`}>
+            <Field label={`Advertised GPU VRAM for scheduling — ${f.max_gpu_pct}%`}
+                   hint="how much of this GPU's VRAM to advertise as free for worker selection. NOT a runtime cap — it doesn't throttle a running task/service.">
               <input type="range" min={10} max={95} value={f.max_gpu_pct} onChange={e => set("max_gpu_pct")(+e.target.value)} style={{ width: "100%" }}/>
             </Field>
           </div>

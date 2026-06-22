@@ -27,6 +27,27 @@ A service is a few structured fields plus one free-form doc:
 
 Only `local_host`/`local_port` are private; everything else is what peers see.
 
+**Two ways to back a service:**
+1. **You run it, NexusGrid tunnels to it.** Start the process yourself bound to
+   loopback and point `local_host`/`local_port` at it (§2). NexusGrid only moves
+   bytes — how the process runs (including any GPU) is entirely your own setup.
+2. **NexusGrid launches it from a run-spec.** Instead of running it yourself, give
+   the service a **run-spec** and NexusGrid (or a peer allowed to replicate it)
+   starts it in a sandbox:
+
+   | run-spec field | purpose |
+   |---|---|
+   | `image` / `command` | container image to pull + command to run |
+   | `ports` | container ports to expose (mapped to a loopback port) |
+   | `env` | `KEY=VAL` pairs; use `secret://NAME` to pull from your vault |
+   | **`gpu`** | give the container the host GPU(s) (NVIDIA, via `--gpus`). In the UI it's a toggle — a count slider on multi-GPU hosts. **Not throttled**: the container gets the full card; there's no enforced GPU % cap on consumer hardware. Blank = CPU-only. |
+   | `build` | a Dockerfile to build locally (FROM a base on your allowlist) instead of pulling |
+   | `inputs` | files (http(s)/rclone) fetched before launch |
+
+The `gpu` field is what makes the **self-hosted-LLM-for-a-group** pattern work:
+one person with a GPU hosts the model; everyone they trust uses it over the tunnel
+with **no GPU and nothing to install** (see the examples in §2).
+
 ---
 
 ## 2. Deploy a service (the happy path)
@@ -64,6 +85,85 @@ curl http://127.0.0.1:52311/v1/chat/completions \
 ```
 Disconnect when done — the session (seconds + bytes) is billed as
 counterparty-signed receipts visible in both nodes' **Usage** tab.
+
+---
+
+## 2b. Example services — deploy & use
+
+Each example shows **what the host fills in** (Services → Deploy a service) and
+**what the consumer runs** after Connect gives them a local `127.0.0.1:<port>`.
+The first two use the run-spec's **GPU** field; the rest are CPU services.
+
+### Example 1 — A shared LLM on your GPU (Ollama)
+*The flagship case: you have the GPU, your group doesn't need one.*
+
+**Host deploys** (run-spec):
+| field | value |
+|---|---|
+| Container image | `ollama/ollama` |
+| Ports | `11434` |
+| **GPU** | `all` |
+| Access | `permission` · Tags | `llm, gpu` |
+
+Load a model once after it starts (from the host, against the running container):
+```
+ollama pull llama3        # or bake it in with a Dockerfile + entrypoint
+```
+
+**Consumer uses** (after Connect → `127.0.0.1:<port>`):
+```
+curl http://127.0.0.1:<port>/api/generate \
+  -d '{"model":"llama3","prompt":"Explain RAID 5 in two lines","stream":false}'
+```
+…or point any OpenAI-compatible app (Open WebUI, Continue, your code) at
+`http://127.0.0.1:<port>/v1`. The model runs on the host's GPU; the consumer
+never installs a model or owns a GPU.
+
+### Example 2 — Image generation on your GPU (ComfyUI / Stable Diffusion)
+**Host deploys:** image = your ComfyUI/SD image · Ports `8188` · **GPU** `all`.
+**Consumer uses:** Connect, then open `http://127.0.0.1:<port>` in a browser —
+the whole web UI is rendering on your peer's GPU.
+
+### Example 3 — A PostgreSQL database (no GPU, one-click)
+**Host deploys:** Service kind `postgres` → **Start a local engine** (auto-fills
+the Admin DSN) · Access `permission`. On each approved grant NexusGrid provisions
+a **per-consumer database + login** automatically.
+**Consumer uses:**
+```
+psql -h 127.0.0.1 -p <port> -U <issued-user> <issued-db>
+```
+Each consumer is isolated to its own database/login; revoke drops both.
+
+### Example 4 — A Redis cache (no GPU)
+**Host deploys:** image `redis` · Ports `6379` (or Service kind `redis` via DBaaS).
+**Consumer uses:**
+```
+redis-cli -p <port>
+```
+
+### Example 5 — Your own web API (no GPU, custom build)
+*Ship code, not just a prebuilt image.*
+**Host deploys:** paste a Dockerfile in **Custom build** (its `FROM` base must be
+on your allowed-images list) · Ports `8000` · Env `API_KEY=secret://my_api_key`
+(pulled from your vault, never written in the spec).
+**Consumer uses:**
+```
+curl http://127.0.0.1:<port>/health
+```
+
+> In every case the consumer talks to `127.0.0.1:<port>` as if the service were
+> local — NexusGrid tunnels it to the host over the authenticated peer link. They
+> never learn the host's real address, and access stops the instant you revoke.
+
+### GPU sharing — what's capped (and what isn't)
+Be clear-eyed about this: GPU passthrough gives the service the **whole card**.
+There is **no enforced GPU limit** — Docker has no GPU-% flag, and hardware
+partitioning (MIG) is datacenter-only. The "Advertised GPU VRAM" setting in Local
+Config is a *scheduling hint*, **not** a runtime cap. RAM and CPU ceilings *are*
+enforced (Docker `mem_limit`/`cpu_quota`; native via OS limits) — GPU is the
+exception. To keep headroom on a personal machine, cap at the **framework** level
+(set the model server's VRAM env in the service's **Env** field, or run a smaller /
+quantized model), limit concurrency, or lower the card's power cap (`nvidia-smi -pl`).
 
 ---
 
