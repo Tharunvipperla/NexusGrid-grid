@@ -78,6 +78,56 @@ def docker_security_opts(profile: str) -> dict:
     return opts
 
 
+def _gpu_device_count(gpu) -> int | None:
+    """Translate a manifest/run-spec ``gpu`` value into a Docker device count.
+
+    Returns ``-1`` for "all GPUs", a positive int for a specific count, or
+    ``None`` when no GPU is requested. Raises ``ValueError`` on a malformed
+    value. Accepts ``"all"`` / ``True`` / ``N`` to request; ``None`` / ``0`` /
+    ``""`` / ``False`` to decline.
+    """
+    if gpu is None or gpu is False:
+        return None
+    if gpu is True:
+        return -1
+    if isinstance(gpu, str):
+        s = gpu.strip().lower()
+        if s in ("", "0", "none", "false", "off", "no"):
+            return None
+        if s in ("all", "-1"):
+            return -1
+        if s.isdigit():
+            n = int(s)
+            return n if n >= 1 else None
+        raise ValueError(f"invalid gpu value: {gpu!r}")
+    if isinstance(gpu, int):
+        return gpu if gpu >= 1 else None
+    raise ValueError(f"invalid gpu value: {gpu!r}")
+
+
+def docker_gpu_opts(gpu) -> dict:
+    """Return ``docker run`` kwargs that expose the host GPU(s) to a container.
+
+    ``gpu`` is the manifest/run-spec request: ``"all"`` / ``True`` / int ``N``
+    asks for GPU(s); ``None`` / ``0`` / ``""`` asks for none. Returns ``{}`` when
+    no GPU is requested, so the container launch is unchanged for every existing
+    (CPU) task — fully backward compatible.
+
+    v1 targets NVIDIA via Docker's ``device_requests`` (the SDK form of
+    ``--gpus``). The **native** runtime needs none of this — a host subprocess
+    already sees the host GPU — so this helper is only called on the Docker path.
+    Raises ``RuntimeError`` if a GPU is requested but the Docker SDK is absent,
+    and ``ValueError`` on a malformed ``gpu`` value.
+    """
+    count = _gpu_device_count(gpu)
+    if count is None:
+        return {}
+    if _docker_mod is None:
+        raise RuntimeError("GPU requested but the Docker SDK is not installed")
+    request = _docker_mod.types.DeviceRequest(count=count, capabilities=[["gpu"]])
+    return {"device_requests": [request]}
+
+
 def docker_available() -> bool:
     """Return ``True`` when the Docker SDK module imported successfully."""
     return _docker_mod is not None
@@ -87,5 +137,6 @@ __all__ = [
     "get_docker_client",
     "reset_docker_client",
     "docker_security_opts",
+    "docker_gpu_opts",
     "docker_available",
 ]

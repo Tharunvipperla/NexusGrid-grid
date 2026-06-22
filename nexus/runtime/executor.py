@@ -37,7 +37,11 @@ from nexus.caches import (
 )
 from nexus.core import LOCAL_SETTINGS, STATE
 from nexus.runtime.capacity import image_allowed
-from nexus.runtime.docker_client import docker_security_opts, get_docker_client
+from nexus.runtime.docker_client import (
+    docker_gpu_opts,
+    docker_security_opts,
+    get_docker_client,
+)
 from nexus.runtime.native_sandbox import (
     SandboxUnavailable,
     assign_to_job_object,
@@ -437,6 +441,11 @@ async def execute_bundle_with_watchdog(
                 "detach": True,
             }
             container_kwargs.update(sec_opts)
+            # GPU passthrough (docker path only): forward the host GPU when the
+            # run-spec asks for it. Native tasks run as a host subprocess and see
+            # the GPU directly, so they need nothing here; an unset request yields
+            # {} and leaves CPU launches unchanged.
+            container_kwargs.update(docker_gpu_opts(m.get("gpu")))
             container = await asyncio.to_thread(
                 docker_client.containers.run, **container_kwargs
             )

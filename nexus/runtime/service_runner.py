@@ -30,7 +30,11 @@ import time
 from typing import Any
 
 from nexus.core import LOCAL_SETTINGS, STATE
-from nexus.runtime.docker_client import docker_security_opts, get_docker_client
+from nexus.runtime.docker_client import (
+    docker_gpu_opts,
+    docker_security_opts,
+    get_docker_client,
+)
 from nexus.runtime.worker_state import (
     register_running_container,
     unregister_running_container,
@@ -371,8 +375,26 @@ def validate_service_manifest(manifest: dict) -> dict:
     # in nexus.api.local.add_workflow.
     data_block = validate_data_sources(manifest)
 
+    # GPU passthrough. Reuse the docker helper's parser so the manifest and the
+    # launch agree on what counts as a valid request. The service runs on THIS
+    # host, so a request requires a GPU to actually be present here — fail fast
+    # with a clear message rather than a confusing docker error at start time.
+    from nexus.runtime.docker_client import _gpu_device_count
+    from nexus.telemetry.hardware import detect_gpu
+
+    try:
+        gpu_count = _gpu_device_count(manifest.get("gpu"))
+    except ValueError as exc:
+        raise ServiceManifestError(str(exc))
+    if gpu_count is not None and not detect_gpu():
+        raise ServiceManifestError(
+            "manifest requests a GPU but none was detected on this host"
+        )
+    gpu = manifest.get("gpu") if gpu_count is not None else None
+
     return {
         "image": image,
+        "gpu": gpu,
         "expose_ports": ports,
         "duration_sec": duration,
         "idle_timeout_sec": idle,
@@ -453,6 +475,9 @@ async def start_service(
         "network_mode": "bridge",
     }
     container_kwargs.update(sec_opts)
+    # GPU passthrough (docker path): forward the host GPU when the manifest asks
+    # for it; an unset request yields {} and leaves the launch unchanged.
+    container_kwargs.update(docker_gpu_opts(spec.get("gpu")))
     if spec["entrypoint"]:
         container_kwargs["command"] = spec["entrypoint"]
     if extra_volumes:

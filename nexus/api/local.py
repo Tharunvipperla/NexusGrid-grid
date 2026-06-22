@@ -4011,6 +4011,27 @@ async def local_add_workflow(
                 if key in t:
                     manifest[key] = t[key]
 
+        # GPU passthrough request for this step ("all" / count). Validate at
+        # submit time (reusing the launch-side parser so they agree) so the user
+        # gets the error here, not on the worker. A GPU request also implies the
+        # step must land on a GPU-capable worker — fold it into require_gpu so the
+        # existing scheduler filter (caps.gpu) routes it correctly.
+        from nexus.runtime.docker_client import _gpu_device_count
+
+        try:
+            step_gpu_count = _gpu_device_count(t.get("gpu"))
+        except ValueError as exc:
+            raise HTTPException(400, detail=f"task {t.get('id')!r}: {exc}")
+        if step_gpu_count is not None:
+            if str(manifest["runtime"]).lower() == "wasm":
+                raise HTTPException(
+                    400, detail=f"task {t.get('id')!r}: wasm runtime cannot use a GPU"
+                )
+            manifest["gpu"] = t.get("gpu")
+        step_require_gpu = (
+            bool(eff.get("require_gpu", require_gpu)) or step_gpu_count is not None
+        )
+
         if slice_count > 1:
             slice_map[base_id] = []
             for i in range(slice_count):
@@ -4038,7 +4059,7 @@ async def local_add_workflow(
                             retry_backoff_base=eff.get("retry_backoff_base") or None,
                             lease_seconds=eff.get("lease_seconds") or None,
                             required_tags=eff.get("required_tags"),
-                            require_gpu=eff.get("require_gpu", require_gpu),
+                            require_gpu=step_require_gpu,
                             preferred_region=eff.get("preferred_region", preferred_region),
                             orphan_policy=eff.get("orphan_policy", orphan_policy),
                             queue_timeout_sec=eff.get("queue_timeout_sec", queue_timeout_sec),
@@ -4070,7 +4091,7 @@ async def local_add_workflow(
                         retry_backoff_base=eff.get("retry_backoff_base") or None,
                         lease_seconds=eff.get("lease_seconds") or None,
                         required_tags=eff.get("required_tags"),
-                        require_gpu=eff.get("require_gpu", require_gpu),
+                        require_gpu=step_require_gpu,
                         preferred_region=eff.get("preferred_region", preferred_region),
                         orphan_policy=eff.get("orphan_policy", orphan_policy),
                         queue_timeout_sec=eff.get("queue_timeout_sec", queue_timeout_sec),
