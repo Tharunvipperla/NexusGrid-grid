@@ -49,3 +49,10 @@ build/_work_new/
 build/NexusGrid/
 *.exe
 *.spec.bak
+
+# Internal planning/design/audit notes (roadmap, security findings, enhancement
+# specs). Kept LOCAL for development; never published to the public repo.
+enhancements/
+
+# Downloaded release artifacts staged for signing (transient).
+_artifacts/
