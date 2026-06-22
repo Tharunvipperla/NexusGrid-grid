@@ -70,11 +70,15 @@ def get_resource_dir() -> Path:
     """Return the directory containing bundled read-only resources.
 
     Under PyInstaller: ``sys._MEIPASS`` (extracted bundle).
-    Otherwise: :data:`BASE_DIR`.
+    Otherwise: the source tree root (the parent of the ``nexus`` package).
+
+    This is deliberately independent of :data:`BASE_DIR`: ``--data-dir`` /
+    ``NEXUS_DATA_DIR`` can relocate the writable data dir, but the read-only
+    resources (UI assets, bundled relay source) always live next to the code.
     """
     if getattr(sys, "frozen", False):
         return Path(sys._MEIPASS)  # type: ignore[attr-defined]
-    return BASE_DIR
+    return Path(__file__).resolve().parent.parent.parent
 
 
 def cache_dir(port: int) -> Path:
