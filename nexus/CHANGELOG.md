@@ -4,6 +4,13 @@ User-facing release notes. The in-app **What's new** panel (notification bell)
 reads this file via `/local/whats_new`. Newest version first; one `## [version] - date`
 header per release, then `-` bullets for the highlights people actually notice.
 
+## [1.2.1] - 2026-06-22
+- **AMD GPU support** — GPU passthrough now works for AMD/ROCm cards too, not just
+  NVIDIA. The node picks the right mechanism from the host's GPU vendor: NVIDIA via
+  `--gpus`, AMD via `/dev/kfd` + `/dev/dri` device mounts (+ render/video groups).
+  The native runtime already worked for either. (AMD ROCm containers may need a bit
+  of host setup — driver group membership, sometimes `seccomp=unconfined`.)
+
 ## [1.2.0] - 2026-06-22
 - **GPU passthrough** — give a task or a hosted service the host's GPU (NVIDIA, via
   `--gpus`) so self-hosted LLMs, rendering, and other accelerated work run on

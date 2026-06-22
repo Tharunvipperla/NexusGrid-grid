@@ -8,7 +8,7 @@ Everything else lives under the submodules. Importing from `nexus` directly shou
 be rare — prefer `from nexus.<subpackage> import ...`.
 """
 
-__version__ = "1.2.0"
+__version__ = "1.2.1"
 
 # `create_app` is exposed lazily to keep `import nexus` cheap (no FastAPI import
 # cost until someone actually wants the app).
