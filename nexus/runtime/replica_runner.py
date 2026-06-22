@@ -92,6 +92,13 @@ def _container_argv(engine: str, ctx: dict) -> list[str]:
         argv += ["--network", ISOLATED_NET]  # internal net: inbound only, no egress
     else:
         argv += ["--network", "none"]
+    # GPU passthrough: the CLI form of device_requests. "all" or a count, only
+    # when the run-spec asked for it. No request => no flag (unchanged launch).
+    from nexus.runtime.docker_client import _gpu_device_count
+
+    gpu_count = _gpu_device_count(spec.get("gpu"))
+    if gpu_count is not None:
+        argv += ["--gpus", "all" if gpu_count == -1 else str(gpu_count)]
     for cp, hp in zip(spec["ports"], ctx["host_ports"]):
         argv += ["-p", f"127.0.0.1:{hp}:{cp}"]
     for e in spec["env"]:
@@ -378,7 +385,7 @@ async def run_replica(provider_uuid: str, service_name: str, runner_name: str,
     except secrets_vault.SecretError as exc:
         return {"ok": False, "error": f"secret_unresolved:{exc}"}
     ctx = {"spec": {"image": built_image or spec.get("image", ""), "cmd": spec.get("cmd", ""),
-                    "env": resolved_env, "ports": spec.get("ports", [])},
+                    "env": resolved_env, "ports": spec.get("ports", []), "gpu": spec.get("gpu")},
            "host_ports": host_ports, "allow_outbound": bool(allow_outbound),
            "mem_mb": _DEFAULT_MEM_MB, "cpus": _DEFAULT_CPUS, "inputs_dir": inputs_dir}
     argv = runner["build"](ctx)

@@ -197,6 +197,7 @@ const ServiceEditor = ({ svc, onSave, onDelete, onCancel }) => {
     pump: s.pump || "", replicable: !!s.replicable, readme: s.readme || "",
     run_image: run.image || "", run_cmd: run.cmd || "",
     run_ports: (run.ports || []).join(", "), run_env: (run.env || []).join(", "),
+    run_gpu: run.gpu == null ? "" : String(run.gpu),
     run_dockerfile: (run.build && run.build.dockerfile) || "",
     run_inputs: (run.inputs || []).map(i => `${i.dest} = ${i.uri}`).join("\n"),
     service_kind: s.service_kind || "",
@@ -242,6 +243,8 @@ const ServiceEditor = ({ svc, onSave, onDelete, onCancel }) => {
         image: f.run_image.trim(), cmd: f.run_cmd.trim(),
         ports: csv(f.run_ports).map(p => parseInt(p, 10)).filter(n => n > 0),
         env: csv(f.run_env),
+        // GPU passthrough request: "all" or a count. Empty = no GPU.
+        ...(f.run_gpu.trim() ? { gpu: f.run_gpu.trim() } : {}),
         // A1: optional custom build context. The consumer builds it locally
         // (consent + FROM-allowlist + sandbox); empty = pull `image` instead.
         ...(f.run_dockerfile.trim() ? { build: { dockerfile: f.run_dockerfile } } : {}),
@@ -324,6 +327,11 @@ const ServiceEditor = ({ svc, onSave, onDelete, onCancel }) => {
       <div className="field-row" style={{ marginTop: 12 }}>
         <Field label="Ports (CSV)"><input className="input mono" placeholder="11434" value={f.run_ports} onChange={set("run_ports")}/></Field>
         <Field label="Env (CSV, KEY=VAL)" hint="secrets allowed as secret://NAME — resolved at run time, never shared"><input className="input mono" value={f.run_env} onChange={set("run_env")}/></Field>
+      </div>
+      <div className="field-row" style={{ marginTop: 12 }}>
+        <Field label="GPU (optional)" hint="blank = none · 'all' = every GPU · or a number. Host must have a GPU and allow it.">
+          <input className="input mono" maxLength={8} placeholder="all" value={f.run_gpu} onChange={set("run_gpu")}/>
+        </Field>
       </div>
       <div style={{ marginTop: 12 }}>
         <CodeField label="Custom build — Dockerfile (optional)" language="dockerfile" rows={5}

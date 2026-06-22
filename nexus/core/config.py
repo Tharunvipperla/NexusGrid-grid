@@ -345,6 +345,15 @@ def _normalize_run_spec(value: Any) -> dict:
         spec["build"] = build
     if inputs:
         spec["inputs"] = inputs
+    # GPU passthrough request ("all" / count). Kept only when it parses to a real
+    # request; the launch paths translate it to docker device_requests / --gpus.
+    gpu = value.get("gpu")
+    if isinstance(gpu, str):
+        gpu = gpu.strip()
+    if gpu in (True, "all", "-1") or (isinstance(gpu, int) and gpu >= 1) or (
+        isinstance(gpu, str) and gpu.isdigit() and int(gpu) >= 1
+    ):
+        spec["gpu"] = gpu
     return spec
 
 

@@ -93,3 +93,47 @@ def test_service_manifest_rejects_garbage_gpu(monkeypatch):
     monkeypatch.setattr("nexus.telemetry.hardware.detect_gpu", lambda: True)
     with pytest.raises(ServiceManifestError):
         validate_service_manifest(_svc_manifest(gpu="banana"))
+
+
+# --- hosted-service run-spec normalization ---------------------------------
+
+from nexus.core.config import _normalize_run_spec
+
+
+@pytest.mark.parametrize("value, expected", [("all", "all"), ("2", "2"), (1, 1), (True, True)])
+def test_run_spec_keeps_gpu_request(value, expected):
+    spec = _normalize_run_spec({"image": "ollama/ollama", "gpu": value})
+    assert spec.get("gpu") == expected
+
+
+@pytest.mark.parametrize("value", [None, "", "0", 0, False, "banana"])
+def test_run_spec_drops_non_gpu(value):
+    spec = _normalize_run_spec({"image": "ollama/ollama", "gpu": value})
+    assert "gpu" not in spec
+
+
+# --- replica runner CLI argv ----------------------------------------------
+
+from nexus.runtime.replica_runner import _container_argv
+
+
+def _ctx(gpu):
+    return {
+        "spec": {"image": "ollama/ollama", "cmd": "", "env": [], "ports": [], "gpu": gpu},
+        "host_ports": [], "allow_outbound": False, "mem_mb": 512, "cpus": 1,
+    }
+
+
+def test_container_argv_adds_gpus_all():
+    argv = _container_argv("docker", _ctx("all"))
+    assert "--gpus" in argv
+    assert argv[argv.index("--gpus") + 1] == "all"
+
+
+def test_container_argv_adds_gpus_count():
+    argv = _container_argv("docker", _ctx(2))
+    assert argv[argv.index("--gpus") + 1] == "2"
+
+
+def test_container_argv_no_gpus_when_unset():
+    assert "--gpus" not in _container_argv("docker", _ctx(None))
