@@ -24,13 +24,16 @@ Define a service with:
 A service is backed by a run-spec, like a task:
 - **Container image** (e.g. `ollama/ollama:latest`), **Command**, **Ports (CSV)**,
   **Env (CSV, KEY=VAL)**.
-- **GPU** — a toggle that gives the service the host's GPU (NVIDIA, via `--gpus`);
-  on a multi-GPU host it becomes a slider to pick how many. Disabled when the host
-  has no GPU. **Sharing is not throttled** — the service gets the full card; there
-  is no enforced GPU % cap on consumer hardware (the "Advertised GPU VRAM" setting
-  in Local Config is a scheduling hint, not a runtime cap). This is what lets one
-  person host an LLM/render/transcode service on their GPU that everyone else uses
-  without a GPU of their own.
+- **GPU** — a toggle that gives the service the host's GPU. **NVIDIA** uses
+  `--gpus`; **AMD/ROCm** uses device mounts (`/dev/kfd` + `/dev/dri` + the
+  render/video groups). On a multi-GPU **NVIDIA** host the toggle becomes a slider
+  to pick how many; AMD exposes all GPUs (per-device pinning isn't supported yet).
+  Disabled when the host has no GPU. **Sharing is not throttled** — the service
+  gets the full card; there is no enforced GPU % cap on consumer hardware (the
+  "Advertised GPU VRAM" setting in Local Config is a scheduling hint, not a runtime
+  cap). This is what lets one person host an LLM/render/transcode service on their
+  GPU that everyone else uses without a GPU of their own. (AMD ROCm workloads may
+  need extra host setup — driver group membership, sometimes `seccomp=unconfined`.)
 - **Custom build — Dockerfile (optional)** — build the image from a base on your
   allowlist instead of pulling a prebuilt one.
 - **Cloud inputs (optional)** — fetch files (http(s) / rclone) before launch.

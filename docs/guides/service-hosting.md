@@ -40,7 +40,7 @@ Only `local_host`/`local_port` are private; everything else is what peers see.
    | `image` / `command` | container image to pull + command to run |
    | `ports` | container ports to expose (mapped to a loopback port) |
    | `env` | `KEY=VAL` pairs; use `secret://NAME` to pull from your vault |
-   | **`gpu`** | give the container the host GPU(s) (NVIDIA, via `--gpus`). In the UI it's a toggle — a count slider on multi-GPU hosts. **Not throttled**: the container gets the full card; there's no enforced GPU % cap on consumer hardware. Blank = CPU-only. |
+   | **`gpu`** | give the container the host GPU(s). **NVIDIA** via `--gpus`; **AMD/ROCm** via `/dev/kfd` + `/dev/dri` device mounts + render/video groups (chosen automatically from the host's GPU vendor). In the UI it's a toggle — a count slider on multi-GPU NVIDIA hosts (AMD exposes all). **Not throttled**: the container gets the full card; there's no enforced GPU % cap on consumer hardware. Blank = CPU-only. |
    | `build` | a Dockerfile to build locally (FROM a base on your allowlist) instead of pulling |
    | `inputs` | files (http(s)/rclone) fetched before launch |
 
@@ -156,6 +156,12 @@ curl http://127.0.0.1:<port>/health
 > never learn the host's real address, and access stops the instant you revoke.
 
 ### GPU sharing — what's capped (and what isn't)
+NVIDIA and AMD are both supported: the node picks the right mechanism from the
+host's GPU vendor (NVIDIA `--gpus`, or AMD/ROCm `/dev/kfd` + `/dev/dri` mounts).
+The **native** runtime works for either with no flags — a host process sees the
+card directly. AMD ROCm containers may need extra host setup (driver group
+membership, sometimes `seccomp=unconfined`); that's the host's to configure.
+
 Be clear-eyed about this: GPU passthrough gives the service the **whole card**.
 There is **no enforced GPU limit** — Docker has no GPU-% flag, and hardware
 partitioning (MIG) is datacenter-only. The "Advertised GPU VRAM" setting in Local

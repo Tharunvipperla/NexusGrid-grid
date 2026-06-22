@@ -139,6 +139,40 @@ def test_container_argv_no_gpus_when_unset():
     assert "--gpus" not in _container_argv("docker", _ctx(None))
 
 
+# --- AMD/ROCm passthrough (a different mechanism than NVIDIA's --gpus) ------
+
+from nexus.runtime.docker_client import docker_gpu_cli_args
+
+
+def test_gpu_opts_amd_uses_device_mounts():
+    o = docker_gpu_opts("all", vendor="amd")
+    assert "device_requests" not in o
+    assert any("/dev/kfd" in d for d in o["devices"])
+    assert any("/dev/dri" in d for d in o["devices"])
+    assert "render" in o["group_add"]
+
+
+def test_gpu_opts_amd_empty_when_unset():
+    assert docker_gpu_opts(None, vendor="amd") == {}
+
+
+def test_gpu_cli_amd_uses_device_flags():
+    args = docker_gpu_cli_args("all", vendor="amd")
+    assert "--gpus" not in args
+    assert "/dev/kfd" in args and "/dev/dri" in args
+    assert "render" in args
+
+
+def test_gpu_cli_nvidia_uses_gpus_flag():
+    assert docker_gpu_cli_args(2, vendor="nvidia") == ["--gpus", "2"]
+    assert docker_gpu_cli_args("all", vendor="nvidia") == ["--gpus", "all"]
+
+
+def test_gpu_cli_empty_when_unset():
+    assert docker_gpu_cli_args(None, vendor="amd") == []
+    assert docker_gpu_cli_args("", vendor="nvidia") == []
+
+
 # --- host GPU count (drives the Services toggle vs slider) -----------------
 
 import types

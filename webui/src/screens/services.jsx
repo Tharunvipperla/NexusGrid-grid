@@ -224,6 +224,9 @@ const ServiceEditor = ({ svc, onSave, onDelete, onCancel }) => {
   const gpuN = f.run_gpu === "all" ? gpuMax : (parseInt(f.run_gpu, 10) || 1);
   const setGpuOn = (on) => set("run_gpu")(on ? "all" : "");
   const setGpuN = (n) => set("run_gpu")(n >= gpuMax ? "all" : String(n));
+  // AMD exposes all GPUs (per-device pinning isn't supported) → toggle only;
+  // the count slider is NVIDIA-only.
+  const gpuPickCount = gpuInfo && gpuInfo.count > 1 && gpuInfo.vendor !== "amd";
 
   /* C7: one-click — start a managed local DB engine and auto-fill the engine,
    * service kind, and admin DSN fields below. */
@@ -352,16 +355,16 @@ const ServiceEditor = ({ svc, onSave, onDelete, onCancel }) => {
           </Field>
         ) : (
           <Field label="GPU"
-                 hint="give this service the host's GPU (NVIDIA, via --gpus). Sharing isn't throttled — the service gets the full card.">
+                 hint="give this service the host's GPU — NVIDIA via --gpus, or AMD/ROCm via device mounts. Sharing isn't throttled: the service gets the full card.">
             <div className="row" style={{ alignItems: "center", gap: 10 }}>
               <Chk on={gpuOn} onChange={setGpuOn}/>
               <span style={{ fontSize: 13 }}>
                 {!gpuOn ? "No GPU"
-                  : gpuInfo.count > 1 ? `Use ${gpuN >= gpuMax ? "all" : gpuN} of ${gpuMax} GPUs`
+                  : gpuPickCount ? `Use ${gpuN >= gpuMax ? "all" : gpuN} of ${gpuMax} GPUs`
                   : "Use the GPU"}
               </span>
             </div>
-            {gpuOn && gpuInfo.count > 1 && (
+            {gpuOn && gpuPickCount && (
               <input type="range" min={1} max={gpuMax} step={1} value={gpuN}
                      onChange={e => setGpuN(+e.target.value)} style={{ width: "100%", marginTop: 8 }}/>
             )}

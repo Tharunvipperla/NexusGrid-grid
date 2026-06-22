@@ -92,13 +92,11 @@ def _container_argv(engine: str, ctx: dict) -> list[str]:
         argv += ["--network", ISOLATED_NET]  # internal net: inbound only, no egress
     else:
         argv += ["--network", "none"]
-    # GPU passthrough: the CLI form of device_requests. "all" or a count, only
-    # when the run-spec asked for it. No request => no flag (unchanged launch).
-    from nexus.runtime.docker_client import _gpu_device_count
+    # GPU passthrough (vendor-aware): NVIDIA --gpus, or AMD device mounts. Empty
+    # when the run-spec didn't ask for a GPU (unchanged launch).
+    from nexus.runtime.docker_client import docker_gpu_cli_args
 
-    gpu_count = _gpu_device_count(spec.get("gpu"))
-    if gpu_count is not None:
-        argv += ["--gpus", "all" if gpu_count == -1 else str(gpu_count)]
+    argv += docker_gpu_cli_args(spec.get("gpu"))
     for cp, hp in zip(spec["ports"], ctx["host_ports"]):
         argv += ["-p", f"127.0.0.1:{hp}:{cp}"]
     for e in spec["env"]:

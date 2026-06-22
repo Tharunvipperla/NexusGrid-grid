@@ -105,27 +105,65 @@ def _gpu_device_count(gpu) -> int | None:
     raise ValueError(f"invalid gpu value: {gpu!r}")
 
 
-def docker_gpu_opts(gpu) -> dict:
-    """Return ``docker run`` kwargs that expose the host GPU(s) to a container.
+def _host_gpu_vendor(vendor: str | None) -> str | None:
+    """Resolve the GPU vendor to target: the caller's override, else the detected
+    host vendor. Local import avoids a load-time dependency on telemetry."""
+    if vendor is not None:
+        return vendor
+    from nexus.telemetry.hardware import gpu_vendor
+    return gpu_vendor()
+
+
+# AMD/ROCm doesn't use ``--gpus``; it needs the kernel + render device nodes
+# exposed plus the render/video groups. This is the documented ROCm-in-Docker
+# recipe and is the v1 AMD passthrough (all GPUs — per-device pinning is future).
+_AMD_DEVICES = ["/dev/kfd:/dev/kfd:rwm", "/dev/dri:/dev/dri:rwm"]
+_AMD_GROUPS = ["render", "video"]
+_AMD_CLI = ["--device", "/dev/kfd", "--device", "/dev/dri",
+            "--group-add", "render", "--group-add", "video"]
+
+
+def docker_gpu_opts(gpu, vendor: str | None = None) -> dict:
+    """Return ``docker run`` (SDK) kwargs that expose the host GPU(s).
 
     ``gpu`` is the manifest/run-spec request: ``"all"`` / ``True`` / int ``N``
     asks for GPU(s); ``None`` / ``0`` / ``""`` asks for none. Returns ``{}`` when
-    no GPU is requested, so the container launch is unchanged for every existing
-    (CPU) task — fully backward compatible.
+    no GPU is requested, so the launch is unchanged for every existing (CPU) task.
 
-    v1 targets NVIDIA via Docker's ``device_requests`` (the SDK form of
-    ``--gpus``). The **native** runtime needs none of this — a host subprocess
-    already sees the host GPU — so this helper is only called on the Docker path.
-    Raises ``RuntimeError`` if a GPU is requested but the Docker SDK is absent,
-    and ``ValueError`` on a malformed ``gpu`` value.
+    Vendor-aware (``vendor`` defaults to the detected host GPU vendor):
+    **NVIDIA** uses Docker's ``device_requests`` (the SDK form of ``--gpus``);
+    **AMD/ROCm** uses raw device mounts (``/dev/kfd`` + ``/dev/dri``) plus the
+    render/video groups — a different mechanism entirely, not ``--gpus``.
+    The **native** runtime needs none of this (a host subprocess sees the GPU),
+    so this helper is only called on the Docker path. Raises ``ValueError`` on a
+    malformed ``gpu`` value, and ``RuntimeError`` if an NVIDIA GPU is requested
+    but the Docker SDK is absent.
     """
     count = _gpu_device_count(gpu)
     if count is None:
         return {}
+    if _host_gpu_vendor(vendor) == "amd":
+        return {"devices": list(_AMD_DEVICES), "group_add": list(_AMD_GROUPS)}
+    # NVIDIA (default): device_requests is the SDK form of --gpus.
     if _docker_mod is None:
         raise RuntimeError("GPU requested but the Docker SDK is not installed")
     request = _docker_mod.types.DeviceRequest(count=count, capabilities=[["gpu"]])
     return {"device_requests": [request]}
+
+
+def docker_gpu_cli_args(gpu, vendor: str | None = None) -> list[str]:
+    """CLI equivalent of :func:`docker_gpu_opts` for runners that shell out to
+    ``docker``/``podman`` (the replica runner). ``[]`` when no GPU is requested.
+
+    NVIDIA → ``--gpus all`` / ``--gpus N``; AMD/ROCm → ``--device`` mounts +
+    ``--group-add``. ``vendor`` defaults to the detected host GPU vendor.
+    """
+    count = _gpu_device_count(gpu)
+    if count is None:
+        return []
+    if _host_gpu_vendor(vendor) == "amd":
+        return list(_AMD_CLI)
+    return ["--gpus", "all" if count == -1 else str(count)]
 
 
 def docker_available() -> bool:
@@ -138,5 +176,6 @@ __all__ = [
     "reset_docker_client",
     "docker_security_opts",
     "docker_gpu_opts",
+    "docker_gpu_cli_args",
     "docker_available",
 ]
