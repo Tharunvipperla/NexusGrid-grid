@@ -201,7 +201,8 @@ def test_check_no_manifest(monkeypatch):
 def test_check_detects_signed_update(monkeypatch, tmp_path):
     root = _use_root(monkeypatch)
     monkeypatch.setattr(updater, "__version__", "1.0.0")
-    m = make_manifest(root, version="1.1.0")
+    # Multi-platform manifest so the update is detected on any OS the test runs on.
+    m = make_manifest(root, version="1.1.0", platforms=_PLATFORMS)
     mf = tmp_path / "manifest.json"
     mf.write_text(json.dumps(m))
     monkeypatch.setenv("NEXUS_UPDATE_MANIFEST_URL", str(mf))
