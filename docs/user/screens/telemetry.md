@@ -5,14 +5,20 @@ running and finished — with live logs, status, controls, and output artifacts.
 
 ---
 
-## The task list
+## The three views
 
-A searchable table of tasks (use the **Search…** box to filter). Standalone
-dispatches and DAG workflows are shown; click a row (or **Open task detail**) to
-expand the detail modal.
+Task telemetry splits work into three tabs, so a log is always filed where you'd
+expect it:
 
-For each task you'll see its status (queued, processing, completed, failed,
-cancelled, disrupted, awaiting-approval…), timing, and where it ran.
+- **Dispatch** — standalone tasks (a single unit of work). A one-off task you run
+  is a "workflow" of one step under the hood; it shows here, not under DAG.
+- **DAG** — multi-step workflows, grouped by workflow with their step graph.
+- **Services** — long-running services.
+
+Use the **Search…** box to filter; click a row (or **Open task detail**) to expand
+the detail modal. For each task you'll see its status (queued, processing,
+completed, failed, cancelled, disrupted, awaiting-approval…), timing, and where it
+ran.
 
 ---
 

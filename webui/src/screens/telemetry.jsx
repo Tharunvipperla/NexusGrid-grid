@@ -466,11 +466,16 @@ const TelemetryScreen = ({ onClone, initialTask }) => {
     );
   };
 
-  // Split standalone dispatches from DAG steps, and group DAG steps by workflow.
-  const dispatchRows = matches.filter(t => !t.parent_id);
-  const dagAll = rows.filter(t => t.parent_id);
+  // Classify by workflow size, not just parent_id: the v3 dispatcher wraps every
+  // task in a workflow, so a 1-step workflow is a standalone "dispatch" and only
+  // multi-step workflows are real DAGs. Services have their own tab — exclude them.
+  const isService = (t) => t.coordination === "serving";
+  const wfKey = (t) => t.parent_id || t.id;
+  const wfSize = {};
+  for (const t of rows) if (!isService(t)) wfSize[wfKey(t)] = (wfSize[wfKey(t)] || 0) + 1;
+  const dispatchRows = matches.filter(t => !isService(t) && wfSize[wfKey(t)] === 1);
   const dagGroups = {};
-  for (const t of dagAll) (dagGroups[t.parent_id] = dagGroups[t.parent_id] || []).push(t);
+  for (const t of rows) if (!isService(t) && wfSize[wfKey(t)] > 1) (dagGroups[t.parent_id] = dagGroups[t.parent_id] || []).push(t);
   const dagList = Object.entries(dagGroups)
     .filter(([wid, steps]) => !ql || (wid + " " + steps.map(s => s.id).join(" ")).toLowerCase().includes(ql))
     .sort((a, b) => a[0].localeCompare(b[0]));
