@@ -21,16 +21,12 @@ function config() {
   return vscode.workspace.getConfiguration("nexusgrid");
 }
 
-export function resolveBaseUrl(): string {
-  return (config().get<string>("baseUrl") || "https://127.0.0.1:8000").replace(/\/+$/, "");
-}
-
-/** Read `.nexus_local_token` from a dir, walking up to the filesystem root. */
-function tokenFromDirUpwards(start: string): string {
+/** Read `filename` from a dir, walking up to the filesystem root. "" if absent. */
+function fileFromDirUpwards(start: string, filename: string): string {
   let dir = start;
   while (dir) {
     try {
-      return fs.readFileSync(path.join(dir, ".nexus_local_token"), "utf8").trim();
+      return fs.readFileSync(path.join(dir, filename), "utf8").trim();
     } catch {
       const parent = path.dirname(dir);
       if (parent === dir) {
@@ -43,31 +39,55 @@ function tokenFromDirUpwards(start: string): string {
 }
 
 /**
+ * Look for one of the node's on-disk files in its likely locations, each walked
+ * up to the filesystem root:
+ *   1. the `nexusgrid.nodeDir` setting, if set;
+ *   2. each workspace folder;
+ *   3. the node's working directory.
+ * The node writes `.nexus_local_token` and `.nexus_local_port` side by side.
+ */
+function findNodeFile(filename: string): string {
+  const nodeDir = (config().get<string>("nodeDir") || "").trim();
+  if (nodeDir) {
+    const v = fileFromDirUpwards(nodeDir, filename);
+    if (v) {
+      return v;
+    }
+  }
+  for (const f of vscode.workspace.workspaceFolders || []) {
+    const v = fileFromDirUpwards(f.uri.fsPath, filename);
+    if (v) {
+      return v;
+    }
+  }
+  return fileFromDirUpwards(process.cwd(), filename);
+}
+
+/**
+ * Base URL of the node. The `nexusgrid.baseUrl` setting wins if set; otherwise
+ * the port is auto-discovered from `.nexus_local_port` (which the node writes on
+ * startup), falling back to 8000. So a node on a non-default port just works.
+ */
+export function resolveBaseUrl(): string {
+  const explicit = (config().get<string>("baseUrl") || "").trim();
+  if (explicit) {
+    return explicit.replace(/\/+$/, "");
+  }
+  const port = findNodeFile(".nexus_local_port");
+  return `https://127.0.0.1:${/^\d+$/.test(port) ? port : "8000"}`;
+}
+
+/**
  * Token resolution, easiest-first so it usually needs no setup:
  *   1. the `nexusgrid.token` setting, if set;
- *   2. the `nexusgrid.nodeDir` setting (and its parents), if set;
- *   3. each workspace folder (and its parents);
- *   4. the node's working directory (and its parents).
+ *   2. `.nexus_local_token` from nodeDir / workspace folders / cwd (and parents).
  */
 export function resolveToken(): string {
   const explicit = (config().get<string>("token") || "").trim();
   if (explicit) {
     return explicit;
   }
-  const nodeDir = (config().get<string>("nodeDir") || "").trim();
-  if (nodeDir) {
-    const t = tokenFromDirUpwards(nodeDir);
-    if (t) {
-      return t;
-    }
-  }
-  for (const f of vscode.workspace.workspaceFolders || []) {
-    const t = tokenFromDirUpwards(f.uri.fsPath);
-    if (t) {
-      return t;
-    }
-  }
-  return tokenFromDirUpwards(process.cwd());
+  return findNodeFile(".nexus_local_token");
 }
 
 function request(method: string, urlStr: string, body?: Buffer, contentType?: string): Promise<{ status: number; text: string }> {

@@ -9,7 +9,11 @@ Two tokens live on disk next to :data:`nexus.core.BASE_DIR`:
 * ``.nexus_local_token`` — bearer token the UI (and any local CLI) presents to
   ``/local/*`` endpoints.
 
-Both files are created on first run and chmod 0o600 on Unix.
+A third file, ``.nexus_local_port``, is written on each startup (not a secret)
+recording the port the node bound, so local clients (e.g. the VS Code extension)
+can discover it instead of assuming the default.
+
+Both token files are created on first run and chmod 0o600 on Unix.
 
 Callers should use :func:`get_signing_secret` / :func:`get_local_api_token`
 rather than reading the files directly. The module caches the values so
@@ -28,6 +32,7 @@ from nexus.core.paths import BASE_DIR, secure_file_permissions
 
 SIGNING_SECRET_FILE = ".nexus_secret"
 LOCAL_TOKEN_FILE = ".nexus_local_token"
+LOCAL_PORT_FILE = ".nexus_local_port"
 SIGNING_SECRET_ENV = "NEXUS_SIGNING_SECRET"
 
 _signing_secret: Optional[str] = None
@@ -92,6 +97,17 @@ def get_local_api_token() -> str:
     if _local_api_token is None:
         _local_api_token = _read_or_create(_resolve_path(LOCAL_TOKEN_FILE))
     return _local_api_token
+
+
+def write_local_port(port: int) -> None:
+    """Record the port this node is serving on, next to the local token, so
+    local clients (the VS Code extension, a CLI) can discover it instead of
+    assuming the default. Best-effort — never fatal to startup.
+    """
+    try:
+        _resolve_path(LOCAL_PORT_FILE).write_text(str(int(port)), encoding="utf-8")
+    except OSError:
+        pass
 
 
 def _reset_for_testing() -> None:

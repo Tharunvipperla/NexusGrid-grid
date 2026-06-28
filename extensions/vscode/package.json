@@ -272,8 +272,8 @@
       "properties": {
         "nexusgrid.baseUrl": {
           "type": "string",
-          "default": "https://127.0.0.1:8000",
-          "description": "Base URL of your local NexusGrid node."
+          "default": "",
+          "markdownDescription": "Base URL of your local NexusGrid node. Leave empty to **auto-discover the port** from the node's `.nexus_local_port` file (falls back to `https://127.0.0.1:8000`). Set this only to point at a non-default host."
         },
         "nexusgrid.token": {
           "type": "string",

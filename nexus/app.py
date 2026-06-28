@@ -95,6 +95,10 @@ def create_app(args=None):
 
         # --- 1. Node port ------------------------------------------------
         set_node_port(port)
+        # Publish the bound port next to the local token so local clients
+        # (e.g. the VS Code extension) discover it instead of guessing 8000.
+        from nexus.security.tokens import write_local_port
+        write_local_port(port)
 
         # --- 1b. E5: apply a staged restore before the DB is opened ------
         from nexus.runtime.backup import apply_pending_restore

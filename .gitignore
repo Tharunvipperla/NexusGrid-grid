@@ -5,6 +5,7 @@ __pycache__/
 
 # Runtime-generated secrets (never commit)
 .nexus_local_token
+.nexus_local_port
 .nexus_secret
 .nexus_group_key
 .nexus_cert.pem
