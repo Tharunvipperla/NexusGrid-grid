@@ -52,6 +52,15 @@ Verify any download against the `sha256` recorded in the release's `manifest.jso
 
 ![NexusGrid dispatcher — building a multi-step DAG workflow](docs/screenshot-dispatcher.png)
 
+## Editor integration (VS Code)
+
+Prefer to stay in your editor? The **[VS Code extension](extensions/vscode/)** drives
+a local node from the files you're already working in: right-click to run a file or
+folder on the grid, run multi-step pipelines (`nexus.dag.json`), deploy services
+(`nexus.service.json`), deposit/retrieve encrypted files, target workers, and toggle
+node settings. It's a thin client of the same `/local/*` API the web panel uses, so
+the two stay in sync live. See [`extensions/vscode/README.md`](extensions/vscode/README.md).
+
 ## Quick start (from source)
 
 ```bash

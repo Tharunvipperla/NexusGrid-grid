@@ -1,0 +1,8 @@
+.vscode/**
+src/**
+out/**/*.map
+node_modules/**
+tsconfig.json
+.gitignore
+gen_icon.js
+smoke*.js

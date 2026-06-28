@@ -1,0 +1,312 @@
+{
+  "name": "nexusgrid",
+  "displayName": "NexusGrid",
+  "description": "Talk to a local NexusGrid node from VS Code: node status, recent tasks, and one-click dispatch.",
+  "version": "0.0.1",
+  "publisher": "nexusgrid",
+  "license": "MIT",
+  "icon": "icon.png",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Tharunvipperla/NexusGrid-grid"
+  },
+  "engines": {
+    "vscode": "^1.75.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "keywords": [
+    "nexusgrid",
+    "p2p",
+    "compute",
+    "grid",
+    "dispatch"
+  ],
+  "main": "./out/extension.js",
+  "activationEvents": [
+    "onView:nexusgrid.nodeView"
+  ],
+  "contributes": {
+    "views": {
+      "explorer": [
+        {
+          "id": "nexusgrid.nodeView",
+          "name": "NexusGrid"
+        }
+      ]
+    },
+    "viewsWelcome": [
+      {
+        "view": "nexusgrid.nodeView",
+        "when": "!nexusgrid.connected",
+        "contents": "Can't reach your NexusGrid node.\n\nStart one with `python -m nexus`, then refresh.\n[Refresh](command:nexusgrid.refresh)\n[Open Settings](command:nexusgrid.configure)"
+      },
+      {
+        "view": "nexusgrid.nodeView",
+        "when": "nexusgrid.connected",
+        "contents": "Connected — no tasks yet.\n\nRun something on the grid:\n[Dispatch a Task](command:nexusgrid.dispatchTask)\n[Run a Pipeline (DAG)](command:nexusgrid.editDagConfig)\n[Deploy a Service](command:nexusgrid.editServiceConfig)\n[Edit nexus.json](command:nexusgrid.editConfig)\n[Open Control Panel](command:nexusgrid.openControlPanel)"
+      }
+    ],
+    "commands": [
+      {
+        "command": "nexusgrid.refresh",
+        "title": "NexusGrid: Refresh",
+        "icon": "$(refresh)"
+      },
+      {
+        "command": "nexusgrid.dispatchTask",
+        "title": "NexusGrid: Dispatch Task",
+        "icon": "$(rocket)"
+      },
+      {
+        "command": "nexusgrid.runOnGrid",
+        "title": "Run on NexusGrid",
+        "icon": "$(rocket)"
+      },
+      {
+        "command": "nexusgrid.openControlPanel",
+        "title": "NexusGrid: Open Control Panel",
+        "icon": "$(globe)"
+      },
+      {
+        "command": "nexusgrid.setTarget",
+        "title": "NexusGrid: Set Target…",
+        "icon": "$(server)"
+      },
+      {
+        "command": "nexusgrid.toggleSetting",
+        "title": "NexusGrid: Toggle Node Setting…",
+        "icon": "$(settings-gear)"
+      },
+      {
+        "command": "nexusgrid.setDisplayName",
+        "title": "NexusGrid: Set Display Name"
+      },
+      {
+        "command": "nexusgrid.editConfig",
+        "title": "NexusGrid: Edit Dispatch Config (nexus.json)",
+        "icon": "$(json)"
+      },
+      {
+        "command": "nexusgrid.editDagConfig",
+        "title": "NexusGrid: Edit Pipeline (nexus.dag.json)",
+        "icon": "$(json)"
+      },
+      {
+        "command": "nexusgrid.runDag",
+        "title": "NexusGrid: Run Pipeline (DAG)",
+        "icon": "$(run-all)"
+      },
+      {
+        "command": "nexusgrid.editServiceConfig",
+        "title": "NexusGrid: Edit Service (nexus.service.json)",
+        "icon": "$(json)"
+      },
+      {
+        "command": "nexusgrid.deployService",
+        "title": "NexusGrid: Deploy Service",
+        "icon": "$(server-process)"
+      },
+      {
+        "command": "nexusgrid.configure",
+        "title": "NexusGrid: Open Settings",
+        "icon": "$(gear)"
+      },
+      {
+        "command": "nexusgrid.viewLogs",
+        "title": "NexusGrid: View Logs",
+        "icon": "$(output)"
+      },
+      {
+        "command": "nexusgrid.stopTask",
+        "title": "NexusGrid: Stop Task",
+        "icon": "$(stop-circle)"
+      },
+      {
+        "command": "nexusgrid.requeueTask",
+        "title": "NexusGrid: Requeue Task",
+        "icon": "$(debug-restart)"
+      },
+      {
+        "command": "nexusgrid.openResults",
+        "title": "NexusGrid: Open Artifacts",
+        "icon": "$(file-directory)"
+      },
+      {
+        "command": "nexusgrid.startService",
+        "title": "NexusGrid: Start Service",
+        "icon": "$(play)"
+      },
+      {
+        "command": "nexusgrid.stopService",
+        "title": "NexusGrid: Stop Service",
+        "icon": "$(debug-stop)"
+      },
+      {
+        "command": "nexusgrid.depositFile",
+        "title": "NexusGrid: Deposit File to Storage",
+        "icon": "$(cloud-upload)"
+      },
+      {
+        "command": "nexusgrid.retrieveDeposit",
+        "title": "NexusGrid: Retrieve Deposit",
+        "icon": "$(cloud-download)"
+      }
+    ],
+    "menus": {
+      "view/title": [
+        {
+          "command": "nexusgrid.refresh",
+          "when": "view == nexusgrid.nodeView",
+          "group": "navigation@1"
+        },
+        {
+          "command": "nexusgrid.dispatchTask",
+          "when": "view == nexusgrid.nodeView",
+          "group": "navigation@2"
+        },
+        {
+          "command": "nexusgrid.openControlPanel",
+          "when": "view == nexusgrid.nodeView",
+          "group": "navigation@3"
+        },
+        {
+          "command": "nexusgrid.editConfig",
+          "when": "view == nexusgrid.nodeView",
+          "group": "navigation@4"
+        },
+        {
+          "command": "nexusgrid.editDagConfig",
+          "when": "view == nexusgrid.nodeView",
+          "group": "navigation@5"
+        },
+        {
+          "command": "nexusgrid.editServiceConfig",
+          "when": "view == nexusgrid.nodeView",
+          "group": "navigation@6"
+        },
+        {
+          "command": "nexusgrid.setTarget",
+          "when": "view == nexusgrid.nodeView",
+          "group": "config@1"
+        },
+        {
+          "command": "nexusgrid.toggleSetting",
+          "when": "view == nexusgrid.nodeView",
+          "group": "config@2"
+        },
+        {
+          "command": "nexusgrid.setDisplayName",
+          "when": "view == nexusgrid.nodeView",
+          "group": "config@3"
+        },
+        {
+          "command": "nexusgrid.configure",
+          "when": "view == nexusgrid.nodeView",
+          "group": "config@4"
+        }
+      ],
+      "explorer/context": [
+        {
+          "command": "nexusgrid.runDag",
+          "when": "resourceFilename == nexus.dag.json",
+          "group": "navigation@89"
+        },
+        {
+          "command": "nexusgrid.deployService",
+          "when": "resourceFilename == nexus.service.json",
+          "group": "navigation@89"
+        },
+        {
+          "command": "nexusgrid.runOnGrid",
+          "when": "resourceScheme == file",
+          "group": "navigation@90"
+        },
+        {
+          "command": "nexusgrid.depositFile",
+          "when": "resourceScheme == file && !explorerResourceIsFolder",
+          "group": "navigation@91"
+        }
+      ],
+      "view/item/context": [
+        {
+          "command": "nexusgrid.viewLogs",
+          "when": "view == nexusgrid.nodeView && viewItem =~ /nexus(Task|Service)/",
+          "group": "inline@1"
+        },
+        {
+          "command": "nexusgrid.stopTask",
+          "when": "view == nexusgrid.nodeView && viewItem == nexusTaskActive",
+          "group": "inline@2"
+        },
+        {
+          "command": "nexusgrid.startService",
+          "when": "view == nexusgrid.nodeView && viewItem == nexusServiceStopped",
+          "group": "inline@2"
+        },
+        {
+          "command": "nexusgrid.stopService",
+          "when": "view == nexusgrid.nodeView && viewItem == nexusServiceRunning",
+          "group": "inline@2"
+        },
+        {
+          "command": "nexusgrid.requeueTask",
+          "when": "view == nexusgrid.nodeView && viewItem == nexusTaskDone",
+          "group": "1_task@1"
+        },
+        {
+          "command": "nexusgrid.openResults",
+          "when": "view == nexusgrid.nodeView && viewItem == nexusTaskDone",
+          "group": "1_task@2"
+        },
+        {
+          "command": "nexusgrid.retrieveDeposit",
+          "when": "view == nexusgrid.nodeView && viewItem == nexusDeposit",
+          "group": "inline@1"
+        }
+      ]
+    },
+    "configuration": {
+      "title": "NexusGrid",
+      "properties": {
+        "nexusgrid.baseUrl": {
+          "type": "string",
+          "default": "https://127.0.0.1:8000",
+          "description": "Base URL of your local NexusGrid node."
+        },
+        "nexusgrid.token": {
+          "type": "string",
+          "default": "",
+          "markdownDescription": "Local API token. If empty, the extension reads `.nexus_local_token` from the node directory (see `nexusgrid.nodeDir`)."
+        },
+        "nexusgrid.nodeDir": {
+          "type": "string",
+          "default": "",
+          "markdownDescription": "Directory the node runs in (where `.nexus_local_token` lives). If empty, the first workspace folder is used."
+        },
+        "nexusgrid.codeLens": {
+          "type": "boolean",
+          "default": true,
+          "markdownDescription": "Show the inline **Dispatch to …** CodeLens above `@nexus:` directive lines."
+        }
+      }
+    }
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "typecheck": "tsc -p ./",
+    "bundle": "esbuild src/extension.ts --bundle --outfile=out/extension.js --external:vscode --format=cjs --platform=node --sourcemap",
+    "compile": "npm run typecheck && npm run bundle",
+    "watch": "esbuild src/extension.ts --bundle --outfile=out/extension.js --external:vscode --format=cjs --platform=node --sourcemap --watch"
+  },
+  "dependencies": {
+    "jszip": "^3.10.1"
+  },
+  "devDependencies": {
+    "@types/node": "^18.0.0",
+    "@types/vscode": "^1.75.0",
+    "esbuild": "^0.20.2",
+    "typescript": "^5.4.0"
+  }
+}
